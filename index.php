@@ -60,7 +60,8 @@
             <nav class="main-nav" id="primary-nav" aria-label="Primary">
                 <a href="#home" class="is-active">Home</a>
                 <a href="#about">About</a>
-                <a href="#team">Our Team</a>
+                <a href="#skills">Our Skill</a>
+                <a href="#team">Team</a>
                 <a href="#projects">Projects</a>
                 <!-- Mobile-only copy of the Contact button -->
                 <a href="#contact" class="nav-button">Contact us</a>
@@ -295,6 +296,82 @@
                         <p>We take on new challenges and keep improving our skills.</p>
                     </div>
 
+                </div>
+
+            </div>
+        </section>
+
+        <!-- OUR SKILL -->
+        <?php
+        /*
+         * Edit the skill groups here.
+         * Each group has a title, a short description, an icon (SVG path data)
+         * and a list of skills shown as chips.
+         */
+        $bb_skills = array(
+            array(
+                'title' => 'Web Development',
+                'desc'  => 'Responsive, accessible websites and web systems.',
+                'icon'  => '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>',
+                'tags'  => array('HTML5', 'CSS3', 'JavaScript', 'PHP', 'Laravel', 'WordPress', 'Tailwind'),
+            ),
+            array(
+                'title' => 'Mobile Development',
+                'desc'  => 'Cross-platform apps with a focus on user experience.',
+                'icon'  => '<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/>',
+                'tags'  => array('Flutter', 'Java', 'React'),
+            ),
+            array(
+                'title' => 'Backend & Database',
+                'desc'  => 'Reliable logic, APIs, and data storage behind the scenes.',
+                'icon'  => '<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/>',
+                'tags'  => array('PHP', 'Node.js', 'Python', 'MySQL'),
+            ),
+            array(
+                'title' => 'UI/UX Design',
+                'desc'  => 'Clean, user-friendly interfaces from wireframe to prototype.',
+                'icon'  => '<path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.6 7.6"/><circle cx="11" cy="11" r="2"/>',
+                'tags'  => array('Figma', 'Wireframing', 'Prototyping'),
+            ),
+            array(
+                'title' => 'IoT & Hardware',
+                'desc'  => 'Projects that connect sensors, devices, and software.',
+                'icon'  => '<rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/>',
+                'tags'  => array('Arduino', 'Sensors', 'Embedded C'),
+            ),
+            array(
+                'title' => 'Tools & Workflow',
+                'desc'  => 'Version control and AI-assisted tools for faster teamwork.',
+                'icon'  => '<circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/>',
+                'tags'  => array('Git', 'Claude Code', 'ChatGPT'),
+            ),
+        );
+        ?>
+        <section class="skills section-padding" id="skills">
+            <div class="container">
+
+                <div class="section-heading">
+                    <h2>Our skills.</h2>
+                    <p>The tools and disciplines we use to bring ideas to life.</p>
+                </div>
+
+                <div class="skills-grid">
+                    <?php foreach ($bb_skills as $skill) : ?>
+                        <article class="skill-card">
+                            <div class="skill-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <?php echo $skill['icon']; // Static SVG markup defined above. ?>
+                                </svg>
+                            </div>
+                            <h3><?php echo esc_html($skill['title']); ?></h3>
+                            <p><?php echo esc_html($skill['desc']); ?></p>
+                            <ul class="skill-tags">
+                                <?php foreach ($skill['tags'] as $tag) : ?>
+                                    <li><?php echo esc_html($tag); ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </article>
+                    <?php endforeach; ?>
                 </div>
 
             </div>
