@@ -1,3 +1,4 @@
+
 <?php
 /**
  * BugBusters Custom – theme functions
@@ -23,10 +24,17 @@ function bugbusters_theme_init_script() {
     <script>
     (function () {
         var theme = null;
-        try { theme = localStorage.getItem('bb-theme'); } catch (e) {}
+
+        try {
+            theme = localStorage.getItem('bb-theme');
+        } catch (e) {}
+
         if (theme !== 'dark' && theme !== 'light') {
-            theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+            theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+                ? 'dark'
+                : 'light';
         }
+
         document.documentElement.setAttribute('data-theme', theme);
     })();
     </script>
@@ -34,8 +42,13 @@ function bugbusters_theme_init_script() {
 }
 add_action('wp_head', 'bugbusters_theme_init_script', 1);
 
+/**
+ * Load theme styles and scripts.
+ * Automatically update version when files change.
+ */
 function bugbusters_enqueue_assets() {
-    // Font (falls back to the system font if it can't load)
+
+    // Google Font
     wp_enqueue_style(
         'bugbusters-fonts',
         'https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap',
@@ -48,15 +61,15 @@ function bugbusters_enqueue_assets() {
         'bugbusters-style',
         get_stylesheet_uri(),
         array('bugbusters-fonts'),
-        wp_get_theme()->get('Version')
+        filemtime(get_stylesheet_directory() . '/style.css')
     );
 
-    // Mobile menu + active link highlight + dark mode toggle
+    // Main JavaScript
     wp_enqueue_script(
         'bugbusters-main',
         get_theme_file_uri('/js/main.js'),
         array(),
-        wp_get_theme()->get('Version'),
+        filemtime(get_theme_file_path('/js/main.js')),
         true
     );
 }
