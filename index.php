@@ -63,7 +63,7 @@
                 <a href="#skills">Our Skill</a>
                 <a href="#team">Team</a>
                 <a href="#projects">Projects</a>
-                <!-- Mobile-only copy of the Contact button -->
+                <!-- Mobile-only (test) copy of the Contact button -->
                 <a href="#contact" class="nav-button">Contact us</a>
             </nav>
 
