@@ -61,7 +61,7 @@
                 <a href="#home" class="is-active">Home</a>
                 <a href="#about">About</a>
                 <a href="#skills">Our Skill</a>
-                <a href="#team">Team e</a>
+                <a href="#team">Team</a>
                 <a href="#projects">Projects</a>
                 <!-- Mobile-only copy of the Contact button -->
                 <a href="#contact" class="nav-button">Contact us</a>
