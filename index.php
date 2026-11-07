@@ -117,10 +117,38 @@
      *   the initials in 'initials' are shown instead.
      */
         $bb_team = array(
-            array('name' => 'Justine Harvey Jaraula',    'role' => 'Technical Writer', 'initials' => 'JH', 'img' => 'member-04.png'),
-            array('name' => 'John Micheal Jaranilla',    'role' => 'Analyst',          'initials' => 'JM', 'img' => 'member-01.png'),
-            array('name' => 'Kenneth Carl Milarpis',     'role' => 'Programmer',       'initials' => 'KC', 'img' => 'member-03.png'),
-            array('name' => 'Angel Grace Salinga',       'role' => 'Project Manager',  'initials' => 'AG', 'img' => 'member-02.png'),
+            array(
+                'name'     => 'Justine Harvey Jaraula',
+                'role'     => 'Technical Writer',
+                'initials' => 'JH',
+                'img'      => 'member-04.png',
+                'desc'     => 'Turns complex ideas into clear documentation, reports, and user guides for the team.',
+                'profile'  => '#', // <- paste his profile link here (Facebook / LinkedIn / GitHub)
+            ),
+            array(
+                'name'     => 'John Micheal Jaranilla',
+                'role'     => 'Analyst',
+                'initials' => 'JM',
+                'img'      => 'member-01.png',
+                'desc'     => 'Studies requirements and data to make sure every solution solves the right problem.',
+                'profile'  => '#', // <- paste his profile link here
+            ),
+            array(
+                'name'     => 'Kenneth Carl Milarpis',
+                'role'     => 'Programmer',
+                'initials' => 'KC',
+                'img'      => 'member-03.png',
+                'desc'     => 'Writes and tests the code that brings our designs and ideas to life.',
+                'profile'  => '#', // <- paste his profile link here
+            ),
+            array(
+                'name'     => 'Angel Grace Salinga',
+                'role'     => 'Project Manager',
+                'initials' => 'AG',
+                'img'      => 'member-02.png',
+                'desc'     => 'Plans the schedule, guides the team, and keeps every project on track.',
+                'profile'  => '#', // <- paste her profile link here
+            ),
         );
 
         // Folders to look in, in order
@@ -423,7 +451,16 @@
                                 <?php endif; ?>
                             </div>
                             <h3><?php echo esc_html($member['name']); ?></h3>
-                            <p><?php echo esc_html($member['role']); ?></p>
+                            <span class="member-role"><?php echo esc_html($member['role']); ?></span>
+                            <p class="member-desc"><?php echo esc_html($member['desc']); ?></p>
+                            <a
+                                href="<?php echo esc_url($member['profile']); ?>"
+                                class="member-link"
+                                <?php echo ($member['profile'] !== '#') ? 'target="_blank" rel="noopener noreferrer"' : ''; ?>
+                                aria-label="View profile of <?php echo esc_attr($member['name']); ?>">
+                                View profile
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                            </a>
                         </div>
                     <?php endforeach; ?>
                 </div>

@@ -996,11 +996,19 @@ html[data-theme="dark"] .visual-card {
 }
 
 .team-card {
-  padding: 12px 12px 20px;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 12px 22px;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius-m);
   text-align: center;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.team-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-3px);
 }
 
 .member-image {
@@ -1032,9 +1040,51 @@ html[data-theme="dark"] .visual-card {
   color: var(--ink);
 }
 
-.team-card p {
+.member-role {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent-dark);
+}
+
+.member-desc {
+  margin: 10px 8px 18px;
   font-size: 14px;
+  line-height: 1.6;
   color: var(--muted);
+}
+
+/* View profile button – pinned to the bottom so all cards line up */
+.member-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  align-self: center;
+  margin-top: auto;
+  padding: 9px 18px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--accent-soft);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent-dark);
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.member-link svg {
+  transition: transform 0.2s ease;
+}
+
+.member-link:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.member-link:hover svg {
+  transform: translateX(3px);
 }
 
 /* ========================================
