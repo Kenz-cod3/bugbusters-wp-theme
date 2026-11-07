@@ -117,10 +117,10 @@
      *   the initials in 'initials' are shown instead.
      */
         $bb_team = array(
-            array('name' => 'Team Member 01', 'initials' => 'M1', 'img' => 'member-01.png'),
-            array('name' => 'Team Member 02', 'initials' => 'M2', 'img' => 'member-02.png'),
-            array('name' => 'Team Member 03', 'initials' => 'M3', 'img' => 'member-03.png'),
-            array('name' => 'Team Member 04', 'initials' => 'M4', 'img' => 'member-04.png'),
+            array('name' => 'Justine Harvey Jaraula',    'role' => 'Technical Writer', 'initials' => 'JH', 'img' => 'member-04.png'),
+            array('name' => 'John Micheal Jaranilla',    'role' => 'Analyst',          'initials' => 'JM', 'img' => 'member-01.png'),
+            array('name' => 'Kenneth Carl Milarpis',     'role' => 'Programmer',       'initials' => 'KC', 'img' => 'member-03.png'),
+            array('name' => 'Angel Grace Salinga',       'role' => 'Project Manager',  'initials' => 'AG', 'img' => 'member-02.png'),
         );
 
         // Folders to look in, in order
@@ -174,12 +174,22 @@
                                 </span>
                             <?php endforeach; ?>
                         </div>
-                        <p class="avatar-text"><strong><?php echo count($bb_team); ?> Team members</strong><br>Individual strengths. Collective progress</p>
+                        <p class="avatar-text"><strong>Meet the builders</strong><br>Individual strengths. Collective progress</p>
                     </div>
 
                 </div>
 
                 <div class="hero-visual" aria-hidden="true">
+
+                    <!-- Above the card (outside it) -->
+                    <div class="visual-heading">
+                        <span class="visual-heading-title">Get to know us</span>
+                        <span class="visual-heading-count">
+                            <span class="online-dot" aria-hidden="true"></span>
+                            <?php echo count($bb_team); ?> Team members
+                        </span>
+                    </div>
+
                     <div class="visual-card">
 
                         <div class="visual-top">
@@ -360,7 +370,8 @@
                         <article class="skill-card">
                             <div class="skill-icon" aria-hidden="true">
                                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                    <?php echo $skill['icon']; // Static SVG markup defined above. ?>
+                                    <?php echo $skill['icon']; // Static SVG markup defined above. 
+                                    ?>
                                 </svg>
                             </div>
                             <h3><?php echo esc_html($skill['title']); ?></h3>
@@ -387,52 +398,34 @@
                 </div>
 
                 <div class="team-grid">
-
-                    <div class="team-card">
-                        <div class="member-image">
-                            <!-- Replace with: <img src="..." alt="Member name"> -->
-                            <svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="8" r="4" />
-                                <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" />
-                            </svg>
+                    <?php foreach ($bb_team as $member) :
+                        // Look for the member's photo in the same folders as the hero avatars
+                        $img_path = '';
+                        foreach ($bb_img_dirs as $dir) {
+                            if (file_exists(get_theme_file_path($dir . $member['img']))) {
+                                $img_path = $dir . $member['img'];
+                                break;
+                            }
+                        }
+                    ?>
+                        <div class="team-card">
+                            <div class="member-image">
+                                <?php if ($img_path !== '') : ?>
+                                    <img
+                                        src="<?php echo esc_url(get_theme_file_uri($img_path)); ?>"
+                                        alt="<?php echo esc_attr($member['name']); ?>"
+                                        loading="lazy">
+                                <?php else : ?>
+                                    <svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <circle cx="12" cy="8" r="4" />
+                                        <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" />
+                                    </svg>
+                                <?php endif; ?>
+                            </div>
+                            <h3><?php echo esc_html($member['name']); ?></h3>
+                            <p><?php echo esc_html($member['role']); ?></p>
                         </div>
-                        <h3>Team Member 01</h3>
-                        <p>Web Developer</p>
-                    </div>
-
-                    <div class="team-card">
-                        <div class="member-image">
-                            <svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="8" r="4" />
-                                <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" />
-                            </svg>
-                        </div>
-                        <h3>Team Member 02</h3>
-                        <p>UI/UX Designer</p>
-                    </div>
-
-                    <div class="team-card">
-                        <div class="member-image">
-                            <svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="8" r="4" />
-                                <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" />
-                            </svg>
-                        </div>
-                        <h3>Team Member 03</h3>
-                        <p>Mobile Developer</p>
-                    </div>
-
-                    <div class="team-card">
-                        <div class="member-image">
-                            <svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="8" r="4" />
-                                <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" />
-                            </svg>
-                        </div>
-                        <h3>Team Member 04</h3>
-                        <p>Backend Developer</p>
-                    </div>
-
+                    <?php endforeach; ?>
                 </div>
 
             </div>
