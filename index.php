@@ -208,7 +208,11 @@
                                 <span class="avatar<?php echo $has_img ? '' : ' is-fallback'; ?>" role="img" aria-label="<?php echo esc_attr($member['name']); ?>" title="<?php echo esc_attr($member['name']); ?>">
                                     <?php if ($has_img) : ?>
                                         <img
-                                            src="<?php echo esc_url(get_theme_file_uri($img_path)); ?>"
+                                            src="<?php echo esc_url(add_query_arg(
+                                                        'ver',
+                                                        filemtime(get_theme_file_path($img_path)),
+                                                        get_theme_file_uri($img_path)
+                                                    )); ?>"
                                             alt=""
                                             loading="lazy">
                                     <?php endif; ?>
@@ -515,7 +519,14 @@
                                             ?>
                                                 <span class="avatar<?php echo $m_img !== '' ? '' : ' is-fallback'; ?>" role="img" aria-label="<?php echo esc_attr($m['name']); ?>" title="<?php echo esc_attr($m['name'] . ' – ' . $m['role']); ?>">
                                                     <?php if ($m_img !== '') : ?>
-                                                        <img src="<?php echo esc_url(get_theme_file_uri($m_img)); ?>" alt="" loading="lazy">
+                                                        <img
+                                                            src="<?php echo esc_url(add_query_arg(
+                                                                        'ver',
+                                                                        filemtime(get_theme_file_path($m_img)),
+                                                                        get_theme_file_uri($m_img)
+                                                                    )); ?>"
+                                                            alt=""
+                                                            loading="lazy">
                                                     <?php endif; ?>
                                                     <span class="avatar-fallback" aria-hidden="true"><?php echo esc_html($m['initials']); ?></span>
                                                 </span>
