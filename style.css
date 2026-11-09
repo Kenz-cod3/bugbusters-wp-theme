@@ -141,8 +141,6 @@ img {
 /* ========================================
    SCROLL INDICATOR (custom, slim, with arrows)
    Layout: [ up arrow ] [ rail + thumb ] [ down arrow ]
-   The native scrollbar is outside the page, so the browser can't
-   animate it. This one is part of the page and reveals with the theme.
 ======================================== */
 
 html.has-scrollbar {
@@ -165,7 +163,7 @@ html.has-scrollbar .scroll-track {
   right: 0;
   bottom: 0;
   z-index: 300;
-  width: 14px; /* slim */
+  width: 14px;
   background: var(--bg);
   border-left: 1px solid var(--line);
 }
@@ -174,7 +172,6 @@ body.admin-bar .scroll-track {
   top: 32px;
 }
 
-/* Up / down arrow buttons */
 .scroll-arrow {
   flex: 0 0 auto;
   display: flex;
@@ -207,13 +204,11 @@ body.admin-bar .scroll-track {
   color: var(--accent-hover);
 }
 
-/* Greyed out when you can't scroll further that way */
 .scroll-arrow.is-disabled {
   opacity: 0.3;
   cursor: default;
 }
 
-/* Rail that holds the thumb */
 .scroll-rail {
   position: relative;
   flex: 1 1 auto;
@@ -224,7 +219,7 @@ body.admin-bar .scroll-track {
   position: absolute;
   top: 0;
   left: 50%;
-  width: 4px; /* slim thumb */
+  width: 4px;
   margin-left: -2px;
   min-height: 30px;
   border-radius: 999px;
@@ -250,7 +245,6 @@ body.admin-bar .scroll-track {
 
 /* ========================================
    FLOATING PILL HEADER
-   Layout: [ logo ] [ centered links ] [ actions ]
 ======================================== */
 
 .site-header {
@@ -266,7 +260,7 @@ body.admin-bar .scroll-track {
   pointer-events: auto;
   position: relative;
   display: grid;
-  grid-template-columns: 1fr auto 1fr; /* equal side columns = truly centered links */
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
   width: min(1040px, calc(100% - 32px));
   margin-inline: auto;
@@ -288,8 +282,6 @@ body.admin-bar .scroll-track {
   box-shadow: var(--nav-shadow-scrolled);
 }
 
-/* Logo */
-
 .logo {
   display: inline-flex;
   align-items: center;
@@ -309,13 +301,10 @@ body.admin-bar .scroll-track {
   height: 36px;
 }
 
-/* Light / dark logo swap */
 html:not([data-theme="dark"]) .logo-dark,
 html[data-theme="dark"] .logo-light {
   display: none;
 }
-
-/* Centered navigation */
 
 .main-nav {
   position: relative;
@@ -371,8 +360,6 @@ html[data-theme="dark"] .logo-light {
   }
 }
 
-/* Right side: Contact button + theme toggle + hamburger */
-
 .nav-actions {
   display: flex;
   align-items: center;
@@ -380,7 +367,6 @@ html[data-theme="dark"] .logo-light {
   gap: 8px;
 }
 
-/* Thin separator on the left of the dark mode button */
 .nav-divider {
   width: 1px;
   height: 24px;
@@ -389,7 +375,6 @@ html[data-theme="dark"] .logo-light {
   opacity: 0.35;
 }
 
-/* Hide the separator in light mode (shown in dark mode only) */
 html:not([data-theme="dark"]) .nav-divider {
   display: none;
 }
@@ -415,20 +400,16 @@ html:not([data-theme="dark"]) .nav-divider {
   color: #fff;
 }
 
-/* Contact button is green while you are on the Contact page */
 .nav-button[aria-current="page"],
 .main-nav .nav-button[aria-current="page"] {
   background: var(--accent);
   color: #fff;
 }
 
-/* The mobile copy of "Contact us" lives inside the dropdown only */
 .main-nav .nav-button {
   display: none;
   color: var(--pill-btn-text);
 }
-
-/* Theme toggle */
 
 .theme-toggle {
   display: inline-flex;
@@ -459,7 +440,6 @@ html:not([data-theme="dark"]) .nav-divider {
   height: 20px;
 }
 
-/* Show the icon of the theme you will switch TO */
 .theme-toggle .icon-sun {
   display: none;
 }
@@ -474,7 +454,6 @@ html[data-theme="dark"] .theme-toggle .icon-moon {
   display: none;
 }
 
-/* Icon animation when the theme changes */
 .theme-toggle.is-animating svg {
   animation: theme-icon-spin 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -490,7 +469,6 @@ html[data-theme="dark"] .theme-toggle .icon-moon {
   }
 }
 
-/* Circular reveal: the new theme grows out of the button */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
@@ -504,14 +482,11 @@ html[data-theme="dark"] .theme-toggle .icon-moon {
   z-index: 2;
 }
 
-/* No competing color fades while the reveal is running */
 html.theme-vt *,
 html.theme-vt *::before,
 html.theme-vt *::after {
   transition: none !important;
 }
-
-/* Hamburger (hidden on desktop) */
 
 .nav-toggle {
   display: none;
@@ -649,8 +624,6 @@ html.theme-vt *::after {
   color: var(--accent-dark);
 }
 
-/* Hero avatars: image with a fallback (initials) */
-
 .hero-avatars {
   display: flex;
   align-items: center;
@@ -692,7 +665,6 @@ html.theme-vt *::after {
   transform: translateY(-3px);
 }
 
-/* Image sits on top of the fallback; if it fails, it is hidden */
 .avatar img {
   position: absolute;
   inset: 0;
@@ -713,7 +685,6 @@ html.theme-vt *::after {
   height: 100%;
 }
 
-/* Different soft color for each fallback */
 .avatar:nth-child(2) {
   background: #e8eff8;
   color: #2f5fa7;
@@ -751,7 +722,6 @@ html[data-theme="dark"] .avatar:nth-child(4) {
   color: var(--ink);
 }
 
-/* Heading ABOVE the hero code card (outside the card) */
 .visual-heading {
   display: flex;
   align-items: center;
@@ -778,7 +748,6 @@ html[data-theme="dark"] .avatar:nth-child(4) {
   color: var(--muted);
 }
 
-/* Online dot with a soft pulsing ring */
 .online-dot {
   position: relative;
   flex-shrink: 0;
@@ -807,8 +776,6 @@ html[data-theme="dark"] .avatar:nth-child(4) {
     opacity: 0;
   }
 }
-
-/* Hero code card – the one memorable element */
 
 .visual-card {
   overflow: hidden;
@@ -891,7 +858,6 @@ html[data-theme="dark"] .visual-card {
   color: #8aa097;
 }
 
-/* Caption BELOW the hero code card (outside the card) */
 .visual-caption {
   display: flex;
   align-items: center;
@@ -1002,7 +968,6 @@ html[data-theme="dark"] .visual-card {
   gap: 20px;
 }
 
-/* Full-picture, borderless card */
 .team-card {
   position: relative;
   aspect-ratio: 3 / 4;
@@ -1037,7 +1002,20 @@ html[data-theme="dark"] .visual-card {
   transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Bottom overlay: name + role, grows to show the description */
+/* Team cards: light photo by default; dark photo only when the card has a
+   real, separate dark variant (.has-dark — Kenneth only). */
+.member-img-dark {
+  display: none;
+}
+
+html[data-theme="dark"] .member-image.has-dark .member-img-light {
+  display: none;
+}
+
+html[data-theme="dark"] .member-image.has-dark .member-img-dark {
+  display: block;
+}
+
 .member-info {
   position: absolute;
   left: 0;
@@ -1068,7 +1046,6 @@ html[data-theme="dark"] .visual-card {
   color: #6ee7b7;
 }
 
-/* Hidden until hover / focus */
 .member-more {
   display: grid;
   grid-template-rows: 0fr;
@@ -1118,7 +1095,6 @@ html[data-theme="dark"] .visual-card {
   transform: translateX(3px);
 }
 
-/* Keyboard focus and touch (tap) also open the card; the mouse uses hover below */
 .team-card:focus-visible,
 .team-card.is-open {
   z-index: 2;
@@ -1168,7 +1144,7 @@ html[data-theme="dark"] .visual-card {
 }
 
 /* ========================================
-   MEMBER PORTFOLIO PAGES (page-justine.php, ...)
+   MEMBER PORTFOLIO PAGES
 ======================================== */
 
 .member-page {
@@ -1182,11 +1158,13 @@ html[data-theme="dark"] .visual-card {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin-bottom: 28px;
+  margin-bottom: 36px;
   font-size: 14px;
   font-weight: 700;
   color: var(--accent-dark);
-  transition: color 0.2s ease, transform 0.2s ease;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .mp-back:hover {
@@ -1194,40 +1172,125 @@ html[data-theme="dark"] .visual-card {
   transform: translateX(-3px);
 }
 
-.mp-hero {
+/* ---------- Top: ONE card wrapping photo + right side ---------- */
+
+.mp-hero-card {
   display: grid;
-  grid-template-columns: 340px 1fr;
-  gap: 48px;
-  align-items: center;
-}
-
-.mp-photo {
-  aspect-ratio: 3 / 4;
-  overflow: hidden;
+  grid-template-columns: 320px 1fr;
+  gap: 40px;
+  align-items: stretch;
+  margin-bottom: 72px;
+  padding: 24px;
+  border: 1px solid var(--line);
   border-radius: var(--radius-l);
-  background: var(--accent-soft);
-  box-shadow: 0 24px 60px rgba(16, 35, 29, 0.18);
+  background: var(--surface);
+  box-shadow: 0 24px 60px -30px rgba(16, 35, 29, 0.25);
 }
 
-.mp-photo img {
+html[data-theme="dark"] .mp-hero-card {
+  box-shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.6);
+}
+
+/* Photo inside the card */
+.mp-photo {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: var(--radius-m);
+  background: var(--accent-soft);
+}
+
+/* Both light and dark images stack in the same box */
+.mp-photo-img {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
+/* Show only the correct one for the current theme.
+   Default (no separate dark photo): the light photo shows in BOTH modes.
+   Only members with a real, separate dark file (.has-dark) swap in dark mode. */
+.mp-photo-dark {
+  display: none;
+}
+
+html[data-theme="dark"] .mp-photo.has-dark .mp-photo-light {
+  display: none;
+}
+
+html[data-theme="dark"] .mp-photo.has-dark .mp-photo-dark {
+  display: block;
+}
+
+/* ---------- Hover photo swap (opt-in — only when .has-hover is present) ----------
+   Members like Justine, John, and Angel do NOT set 'img_hover' in their
+   own files. Their .mp-hero-card therefore never gets the .has-hover class,
+   so the rules below never apply to them — they keep the default light/dark
+   photo behavior with no hover swap.
+
+   For Kenneth:
+     light mode hover -> .mp-hover-light (member-03shock.png)
+     dark  mode hover -> .mp-hover-dark  (member-03shock1.png) */
+
+.mp-photo-hover {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Only the hover image that matches the current theme may be shown */
+html:not([data-theme="dark"]) .mp-hover-dark,
+html[data-theme="dark"] .mp-hover-light {
+  display: none !important;
+}
+
+/* Fade out the theme photo on hover / focus — only if this member opted in */
+.mp-hero-card.has-hover .mp-photo:hover .mp-photo-light,
+.mp-hero-card.has-hover .mp-photo:focus-within .mp-photo-light,
+.mp-hero-card.has-hover .mp-photo:hover .mp-photo-dark,
+.mp-hero-card.has-hover .mp-photo:focus-within .mp-photo-dark {
+  opacity: 0;
+}
+
+/* Fade in the correct hover photo — only if this member opted in */
+.mp-hero-card.has-hover .mp-photo:hover .mp-photo-hover,
+.mp-hero-card.has-hover .mp-photo:focus-within .mp-photo-hover {
+  display: block;
+  opacity: 1;
+}
+
 .mp-photo.is-fallback {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 72px;
+}
+
+.mp-photo-initials {
+  font-size: 80px;
   font-weight: 800;
+  letter-spacing: -0.03em;
   color: var(--accent);
 }
 
-.mp-intro h1 {
-  margin: 20px 0 6px;
-  font-size: clamp(32px, 5vw, 52px);
+/* Right side: name + role, description, buttons — all pushed to the bottom */
+.mp-intro {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding-right: 8px;
+}
+
+.mp-title {
+  margin: 0 0 16px;
+}
+
+.mp-name {
+  margin: 0;
+  font-size: clamp(28px, 3.4vw, 40px);
   font-weight: 800;
   line-height: 1.1;
   letter-spacing: -0.03em;
@@ -1235,81 +1298,306 @@ html[data-theme="dark"] .visual-card {
 }
 
 .mp-role {
-  display: block;
+  margin: 8px 0 0;
   font-size: 17px;
   font-weight: 700;
+  line-height: 1.3;
   color: var(--accent-dark);
 }
 
-.mp-lead {
+/* Description sits directly under the name */
+.mp-desc {
   max-width: 560px;
-  margin: 20px 0 0;
-  font-size: 17px;
+  margin-bottom: 24px;
+  font-size: 16px;
   line-height: 1.7;
   color: var(--text);
 }
 
-.mp-intro .hero-buttons {
-  margin-top: 28px;
+/* Buttons at the very bottom */
+.mp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
-.mp-sections {
+.mp-btn {
+  gap: 8px;
+  padding: 12px 22px;
+  font-size: 14px;
+}
+
+.mp-btn svg {
+  flex-shrink: 0;
+}
+
+.mp-btn.is-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-primary.mp-btn.is-disabled:hover {
+  background: var(--accent);
+}
+
+.btn-secondary.mp-btn.is-disabled:hover {
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+/* ---------- Body: About (left) + details (right) ---------- */
+
+.mp-body {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 64px;
+  align-items: start;
+}
+
+.mp-card h2 {
+  margin: 0 0 18px;
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.mp-side {
   display: grid;
   gap: 20px;
-  margin-top: 64px;
 }
 
-.mp-card {
-  padding: 28px 30px;
+.mp-about,
+.mp-contact-card {
+  padding: 28px;
   border: 1px solid var(--line);
   border-radius: var(--radius-m);
   background: var(--surface);
 }
 
-.mp-card h2 {
-  margin: 0 0 16px;
-  font-size: 13px;
+.mp-about-text p {
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--text);
+}
+
+.mp-about-text p + p {
+  margin-top: 12px;
+}
+
+.mp-links {
+  display: grid;
+  gap: 8px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+
+.mp-links a {
+  font-size: 14px;
   font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--muted);
+  color: var(--accent-dark);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.mp-links a:hover {
+  color: var(--accent);
+}
+
+.mp-contact-card p {
+  margin-bottom: 20px;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--text);
+}
+
+.mp-contact {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.mp-main .mp-card {
+  padding: 0 0 44px;
+  margin-bottom: 44px;
+  border-bottom: 1px solid var(--line);
+}
+
+.mp-main .mp-card:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.mp-sub {
+  margin: 26px 0 12px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.mp-card h2 + .mp-sub {
+  margin-top: 0;
 }
 
 .mp-empty {
+  padding: 16px 18px;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-s);
+  font-size: 14px;
   color: var(--muted);
+}
+
+.mp-areas {
+  gap: 8px;
+}
+
+.mp-areas li {
+  padding: 7px 16px;
+  border-color: var(--pill-btn-bg);
+  background: var(--pill-btn-bg);
+  font-size: 13px;
+  color: var(--pill-btn-text);
+}
+
+.mp-tech {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+  list-style: none;
+}
+
+.mp-tech li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-s);
+  background: var(--surface);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.mp-tech li img {
+  display: block;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+html[data-theme="dark"] .mp-tech li img {
+  padding: 2px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.mp-timeline {
+  position: relative;
+  padding-left: 28px;
+  list-style: none;
+}
+
+.mp-timeline::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 6px;
+  width: 2px;
+  background: var(--line);
+}
+
+.mp-timeline li {
+  position: relative;
+  padding-bottom: 28px;
+}
+
+.mp-timeline li:last-child {
+  padding-bottom: 0;
+}
+
+.mp-timeline li::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: -28px;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  background: var(--bg);
+}
+
+.mp-timeline h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.mp-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 14px;
+  margin-top: 2px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.mp-org {
+  font-weight: 700;
+  color: var(--accent-dark);
+}
+
+.mp-job-desc {
+  margin-top: 8px;
+  font-size: 15px;
+  line-height: 1.7;
 }
 
 .mp-projects {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 16px;
 }
 
 .mp-project {
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  padding: 22px;
   border: 1px solid var(--line);
-  border-radius: var(--radius-s);
-  background: var(--bg);
+  border-radius: var(--radius-m);
+  background: var(--surface);
+  transition: border-color 0.2s ease;
+}
+
+.mp-project:hover {
+  border-color: var(--accent);
 }
 
 .mp-project h3 {
   margin: 0 0 6px;
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--ink);
 }
 
 .mp-project p {
-  margin: 0 0 12px;
+  margin: 0 0 14px;
   font-size: 14px;
-  line-height: 1.6;
+  line-height: 1.65;
   color: var(--muted);
 }
 
 .mp-project-link {
-  display: inline-block;
-  margin-top: 12px;
-  font-size: 13px;
+  margin-top: auto;
+  padding-top: 16px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--accent-dark);
 }
@@ -1318,33 +1606,86 @@ html[data-theme="dark"] .visual-card {
   color: var(--accent);
 }
 
-@media (max-width: 860px) {
+/* ---------- Responsive ---------- */
+
+@media (max-width: 900px) {
   .member-page {
     padding: 120px 0 72px;
   }
 
-  .mp-hero {
+  .mp-hero-card {
     grid-template-columns: 1fr;
     gap: 28px;
+    margin-bottom: 48px;
+    padding: 20px;
   }
 
   .mp-photo {
-    max-width: 320px;
+    max-width: 300px;
   }
 
-  .mp-sections {
-    margin-top: 44px;
+  /* On mobile: name/role first, then description, then buttons */
+  .mp-intro {
+    justify-content: flex-start;
+  }
+
+  .mp-title {
+    order: 0;
+    margin-top: 0;
+    padding-top: 0;
+    margin-bottom: 18px;
+  }
+
+  .mp-desc {
+    order: 0;
+    margin-bottom: 20px;
+  }
+
+  .mp-body {
+    grid-template-columns: 1fr;
+    gap: 44px;
   }
 }
 
 @media (max-width: 560px) {
-  .mp-card {
+  .mp-hero-card {
+    padding: 16px;
+  }
+
+  .mp-photo {
+    max-width: 260px;
+  }
+
+  .mp-name {
+    font-size: 26px;
+  }
+
+  .mp-role {
+    font-size: 15px;
+  }
+
+  .mp-actions .mp-btn {
+    flex: 1 1 100%;
+  }
+
+  .mp-about,
+  .mp-contact-card {
     padding: 22px 20px;
   }
 
-  .mp-intro .hero-buttons a {
-    width: 100%;
-    text-align: center;
+  .mp-tech {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mp-back,
+  .mp-project {
+    transition: none;
+  }
+
+  .mp-back:hover {
+    transform: none;
   }
 }
 
@@ -1504,7 +1845,6 @@ html[data-theme="dark"] .preview-three {
   color: var(--muted);
 }
 
-/* Social icons */
 .footer-social {
   display: flex;
   gap: 10px;
@@ -1521,7 +1861,11 @@ html[data-theme="dark"] .preview-three {
   border-radius: 50%;
   background: var(--bg);
   color: var(--ink);
-  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .footer-social a:hover {
@@ -1531,7 +1875,6 @@ html[data-theme="dark"] .preview-three {
   transform: translateY(-3px);
 }
 
-/* Footer navigation */
 .footer-nav h4 {
   margin-bottom: 14px;
   font-size: 12px;
@@ -1575,10 +1918,6 @@ html[data-theme="dark"] .preview-three {
 }
 
 .back-top {
-  font-size: 13px;
-}
-
-.back-top {
   font-weight: 600;
 }
 
@@ -1587,7 +1926,7 @@ html[data-theme="dark"] .preview-three {
 }
 
 /* ========================================
-   TECH MARQUEE (auto-scroll + drag / swipe)
+   TECH MARQUEE
 ======================================== */
 
 .tech-marquee {
@@ -1609,7 +1948,7 @@ html[data-theme="dark"] .preview-three {
 .marquee {
   overflow: hidden;
   cursor: grab;
-  touch-action: pan-y; /* vertical page scroll still works; left/right goes to the drag */
+  touch-action: pan-y;
   -webkit-user-select: none;
   user-select: none;
   -webkit-mask-image: linear-gradient(
@@ -1636,14 +1975,13 @@ html[data-theme="dark"] .preview-three {
   display: flex;
   width: max-content;
   will-change: transform;
-  animation: marquee-scroll 40s linear infinite; /* fallback if JavaScript is off */
+  animation: marquee-scroll 40s linear infinite;
 }
 
 .marquee:hover .marquee-track {
   animation-play-state: paused;
 }
 
-/* When JS is running, it moves the track itself (so it can be dragged) */
 .marquee.is-js .marquee-track {
   animation: none;
 }
@@ -1682,12 +2020,11 @@ html[data-theme="dark"] .preview-three {
   width: 36px;
   height: 36px;
   object-fit: contain;
-  pointer-events: none; /* so the image never gets picked up by the browser's own drag */
+  pointer-events: none;
   -webkit-user-drag: none;
   user-drag: none;
 }
 
-/* Some logos (GitHub-style black icons) disappear on dark – soften them */
 html[data-theme="dark"] .tech-item {
   opacity: 0.75;
 }
@@ -1723,7 +2060,6 @@ html[data-theme="dark"] .tech-item img {
   }
 }
 
-/* Reduced motion: no auto-scroll, just a normal swipeable strip */
 @media (prefers-reduced-motion: reduce) {
   .marquee {
     overflow-x: auto;
@@ -1847,7 +2183,6 @@ body.admin-bar .site-header {
    RESPONSIVE
 ======================================== */
 
-/* Tablet: switch to the mobile menu */
 @media (max-width: 860px) {
   .nav-container {
     display: flex;
@@ -1859,7 +2194,6 @@ body.admin-bar .site-header {
     display: block;
   }
 
-  /* Desktop Contact button hides; the one inside the dropdown shows */
   .nav-actions .nav-cta,
   .nav-divider {
     display: none;
@@ -1869,7 +2203,6 @@ body.admin-bar .site-header {
     display: inline-flex;
   }
 
-  /* Menu drops down as a rounded panel under the pill */
   .main-nav {
     position: absolute;
     top: calc(100% + 10px);
@@ -1923,7 +2256,6 @@ body.admin-bar .site-header {
     text-align: center;
   }
 
-  /* Hero stacks */
   .hero {
     padding: 140px 0 80px;
   }
@@ -1943,7 +2275,6 @@ body.admin-bar .site-header {
   }
 }
 
-/* Phone */
 @media (max-width: 600px) {
   :root {
     --header-top: 12px;
@@ -2005,7 +2336,6 @@ body.admin-bar .site-header {
   }
 }
 
-/* Respect users who prefer less motion */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -2022,12 +2352,9 @@ body.admin-bar .site-header {
 
 /* ========================================
    HERO: align the bottom rows
-   "4 Team members" (left) and "BugBusters" (right)
-   now sit on the same line, with the same height.
 ======================================== */
 
 @media (min-width: 861px) {
-  /* Both columns take the same height */
   .hero-content {
     align-items: stretch;
   }
@@ -2038,14 +2365,11 @@ body.admin-bar .site-header {
     flex-direction: column;
   }
 
-  /* CHANGED: was "center". Now the left column starts at the top,
-     so "Student development team" sits on the same line as "Get to know us". */
   .hero-text {
     align-items: flex-start;
     justify-content: flex-start;
   }
 
-  /* Left: keep the gap above the avatars, then push them to the bottom */
   .hero-buttons {
     margin-bottom: 32px;
   }
@@ -2055,7 +2379,6 @@ body.admin-bar .site-header {
     height: 48px;
   }
 
-  /* Right: the code card fills the space, the caption sits at the bottom */
   .visual-card {
     flex: 1;
     display: flex;
@@ -2116,7 +2439,6 @@ body.admin-bar .site-header {
   color: var(--accent);
 }
 
-/* Icon + title on the same row, vertically centered */
 .skill-head {
   display: flex;
   align-items: center;
@@ -2142,8 +2464,6 @@ body.admin-bar .site-header {
   margin-top: auto;
 }
 
-/* Align every row across all cards (title / description / technologies / members)
-   so "Related technologies" and "Related members" line up card to card. */
 @supports (grid-template-rows: subgrid) {
   .skill-card {
     display: grid;
@@ -2182,7 +2502,6 @@ body.admin-bar .site-header {
   color: var(--accent-dark);
 }
 
-/* Technology logo inside each chip */
 .skill-tags li img {
   display: block;
   width: 13px;
@@ -2190,7 +2509,6 @@ body.admin-bar .site-header {
   object-fit: contain;
 }
 
-/* Dark logos (GitHub, Notion...) stay visible on dark mode */
 html[data-theme="dark"] .skill-tags li img {
   padding: 2px;
   width: 17px;
@@ -2199,7 +2517,6 @@ html[data-theme="dark"] .skill-tags li img {
   background: rgba(255, 255, 255, 0.92);
 }
 
-/* Related members at the bottom of each skill card */
 .skill-members {
   margin-top: 22px;
   padding-top: 16px;
@@ -2230,7 +2547,6 @@ html[data-theme="dark"] .skill-tags li img {
   padding-top: 1px;
 }
 
-/* Number on the right side of the label */
 .skill-members-label .skill-count {
   display: inline-flex;
   align-items: center;
@@ -2280,7 +2596,7 @@ html[data-theme="dark"] .skill-tags li img {
 }
 
 /* ========================================
-   CONTACT PAGE (page-contact.php)
+   CONTACT PAGE
 ======================================== */
 
 .contact-page {
@@ -2310,7 +2626,6 @@ html[data-theme="dark"] .skill-tags li img {
   align-items: start;
 }
 
-/* Left: details */
 .cp-info {
   display: flex;
   flex-direction: column;
@@ -2353,7 +2668,6 @@ html[data-theme="dark"] .skill-tags li img {
   color: var(--accent-dark);
 }
 
-/* Container card around "Meet the team" (same look as the form card) */
 .cp-team {
   margin-top: 8px;
   padding: 24px;
@@ -2380,7 +2694,9 @@ html[data-theme="dark"] .skill-tags li img {
   border: 1px solid var(--line);
   border-radius: var(--radius-s);
   background: var(--bg);
-  transition: border-color 0.2s ease, transform 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .cp-team-list li:hover {
@@ -2457,7 +2773,6 @@ html[data-theme="dark"] .skill-tags li img {
   }
 }
 
-/* Right: form card */
 .cp-form-wrap {
   padding: 32px;
   background: var(--surface);
@@ -2503,7 +2818,9 @@ html[data-theme="dark"] .skill-tags li img {
   font-family: inherit;
   font-size: 15px;
   color: var(--ink);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .cp-field textarea {
@@ -2525,7 +2842,6 @@ html[data-theme="dark"] .skill-tags li img {
   box-shadow: 0 0 0 4px var(--accent-soft);
 }
 
-/* "Send to" dropdown */
 .cp-field select {
   padding-right: 44px;
   cursor: pointer;
@@ -2537,7 +2853,6 @@ html[data-theme="dark"] .skill-tags li img {
   background-size: 18px;
 }
 
-/* Styled dropdown (built by main.js; the real <select> stays hidden inside the form) */
 .cp-select-native {
   position: absolute;
   width: 1px;
@@ -2567,7 +2882,9 @@ html[data-theme="dark"] .skill-tags li img {
   text-align: left;
   color: var(--ink);
   cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .cp-select-trigger:hover {
@@ -2585,7 +2902,9 @@ html[data-theme="dark"] .skill-tags li img {
   flex: none;
   margin-left: auto;
   color: var(--muted);
-  transition: transform 0.25s ease, color 0.2s ease;
+  transition:
+    transform 0.25s ease,
+    color 0.2s ease;
 }
 
 .cp-select.is-open .cp-chevron {
@@ -2704,7 +3023,6 @@ html[data-theme="dark"] .skill-tags li img {
   display: inline-flex;
 }
 
-/* Email shown under the "Send to" dropdown */
 .cp-hint {
   margin-top: 8px;
   font-size: 13.5px;
@@ -2718,7 +3036,6 @@ html[data-theme="dark"] .skill-tags li img {
   word-break: break-all;
 }
 
-/* Heading on top of the form card */
 .cp-form-head {
   margin-bottom: 24px;
 }
@@ -2745,7 +3062,6 @@ html[data-theme="dark"] .skill-tags li img {
   font-family: inherit;
 }
 
-/* Spam trap (hidden from people) */
 .cp-hp {
   position: absolute;
   left: -9999px;
@@ -2754,7 +3070,6 @@ html[data-theme="dark"] .skill-tags li img {
   overflow: hidden;
 }
 
-/* Success / error messages */
 .cp-alert {
   margin-bottom: 20px;
   padding: 14px 18px;
@@ -2809,7 +3124,7 @@ html[data-theme="dark"] .cp-alert-error {
 }
 
 /* ========================================
-   404 PAGE (404.php)
+   404 PAGE
 ======================================== */
 
 .error-page {
@@ -2869,7 +3184,7 @@ html[data-theme="dark"] .cp-alert-error {
   grid-template-columns: repeat(4, 1fr);
   align-items: stretch;
   gap: 14px;
-  min-height: 470px; /* same pill height as before + room for the name under it */
+  min-height: 470px;
 }
 
 .pill {
@@ -2882,7 +3197,6 @@ html[data-theme="dark"] .cp-alert-error {
   box-shadow: 0 24px 48px -22px rgba(16, 35, 29, 0.35);
 }
 
-/* Pill + name move together. Staggered: 1 & 3 sit high, 2 & 4 sit low (bottoms don't line up) */
 .pill-item {
   display: flex;
   flex-direction: column;
@@ -2915,8 +3229,20 @@ html[data-theme="dark"] .pill {
   object-position: center top;
 }
 
+/* Home hero pills: light photo by default; dark photo only when the pill
+   has a real, separate dark variant (.has-dark — Kenneth only). */
+.pill-img-dark {
+  display: none;
+}
 
-/* Shown when there is no photo yet */
+html[data-theme="dark"] .pill.has-dark .pill-img-light {
+  display: none;
+}
+
+html[data-theme="dark"] .pill.has-dark .pill-img-dark {
+  display: block;
+}
+
 .pill-fallback {
   position: absolute;
   inset: 0;
@@ -3000,7 +3326,6 @@ html[data-theme="dark"] .pill {
   }
 }
 
-/* Blinking cursor after "Ready to innovate" */
 .code-cursor {
   display: inline-block;
   width: 7px;
@@ -3064,9 +3389,6 @@ html[data-theme="dark"] .pill {
   }
 }
 
-
-/* Separator under the pill photos: grey line that fades out on both sides,
-   with a small theme-colored dot in the middle */
 .pill-separator {
   display: flex;
   align-items: center;
@@ -3136,7 +3458,6 @@ html[data-theme="dark"] .pill-separator::after {
   color: var(--muted);
 }
 
-/* Arrow link at the bottom of the pill: translucent + blurred, no hover animation */
 .pill-link {
   position: absolute;
   bottom: 14px;
@@ -3163,15 +3484,12 @@ html[data-theme="dark"] .pill-separator::after {
   height: 16px;
 }
 
-/* Invisible layer: makes the whole pill clickable */
 .pill-cover {
   position: absolute;
   inset: 0;
   z-index: 2;
 }
 
-/* Hover / click on the pill (or the arrow itself, or keyboard focus):
-   the arrow takes the theme color (follows light / dark theme), no animation */
 .pill:hover .pill-link,
 .pill:active .pill-link,
 .pill-link:hover,
@@ -3207,7 +3525,6 @@ html[data-theme="dark"] .pill-separator::after {
 
 /* ========================================
    HERO: "Meet the builders" stays right under the buttons
-   (no longer pushed down to line up with the "BugBusters" caption)
 ======================================== */
 
 @media (min-width: 861px) {
@@ -3219,9 +3536,6 @@ html[data-theme="dark"] .pill-separator::after {
 
 /* ========================================
    NEW: HERO TOP ROW ALIGNMENT
-   "Student development team" (left) and "Get to know us" (right)
-   share the same top line and the same height (38px),
-   so their text is centered on one horizontal line.
 ======================================== */
 
 @media (min-width: 861px) {

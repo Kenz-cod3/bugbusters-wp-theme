@@ -110,62 +110,89 @@
         <!-- HERO -->
         <?php
         /*
-     * Team avatars (image + fallback).
-     * - Photos can be in:  bugbusters-custom/images/        (current setup)
-     *                  or  bugbusters-custom/images/team/
-     * - Set 'img' to the file name. If the file is missing in both folders,
-     *   the initials in 'initials' are shown instead.
-     */
+         * Team members.
+         * - Photos can be in:  bugbusters-custom/images/        (current setup)
+         *                  or  bugbusters-custom/images/team/
+         * - 'img'       = the default photo (shown in light mode, and in dark
+         *                 mode for members without a dark photo).
+         * - 'img_dark'  = OPTIONAL separate dark-mode photo. Only Kenneth has
+         *                 one (member-03.png). For everyone else, leave it ''
+         *                 so the same photo is used in both modes.
+         */
         $bb_team = array(
             array(
                 'name'     => 'Justine Harvey Jaraula',
                 'role'     => 'Technical Writer',
                 'initials' => 'JH',
                 'img'      => 'member-04.png',
+                'img_dark' => '', // no separate dark photo → same in both modes
                 'desc'     => 'Turns complex ideas into clear documentation, reports, and user guides for the team.',
-                'profile'  => '#', // <- paste his profile link here (Facebook / LinkedIn / GitHub)
-                'slug'     => 'justine', // <- portfolio page of this member (page-justine.php)
+                'profile'  => '#',
+                'slug'     => 'justine',
             ),
             array(
                 'name'     => 'John Micheal Jaranilla',
                 'role'     => 'Analyst',
                 'initials' => 'JM',
-                'img'      => 'member-01.png',
+                'img'      => 'member-01glass.png', // light mode
+                'img_dark' => 'member-01.png',      // dark mode
                 'desc'     => 'Studies requirements and data to make sure every solution solves the right problem.',
-                'profile'  => '#', // <- paste his profile link here
-                'slug'     => 'john', // <- portfolio page of this member (page-john.php)
+                'profile'  => '#',
+                'slug'     => 'john',
             ),
             array(
                 'name'     => 'Kenneth Carl Milarpis',
                 'role'     => 'Programmer',
                 'initials' => 'KC',
-                'img'      => 'member-03.png',
+                'img'      => 'member-03glass.png', // light mode
+                'img_dark' => 'member-03.png',      // dark mode  <-- only Kenneth has this
                 'desc'     => 'Writes and tests the code that brings our designs and ideas to life.',
-                'profile'  => '#', // <- paste his profile link here
-                'slug'     => 'kenneth', // <- portfolio page of this member (page-kenneth.php)
+                'profile'  => '#',
+                'slug'     => 'kenneth',
             ),
             array(
                 'name'     => 'Angel Grace Salingay',
                 'role'     => 'Project Manager',
                 'initials' => 'AG',
                 'img'      => 'member-02.png',
+                'img_dark' => '', // no separate dark photo → same in both modes
                 'desc'     => 'Plans the schedule, guides the team, and keeps every project on track.',
-                'profile'  => '#', // <- paste her profile link here
-                'slug'     => 'angel', // <- portfolio page of this member (page-angel.php)
+                'profile'  => '#',
+                'slug'     => 'angel',
             ),
         );
 
         // Folders to look in, in order
         $bb_img_dirs = array('/images/team/', '/images/');
 
-        // Finds a member's photo (returns '' if there is none)
-        $bb_find_img = function ($member) use ($bb_img_dirs) {
+        // Resolve a member photo file: returns the theme-relative path or ''.
+        $bb_find_img = function ($file) use ($bb_img_dirs) {
+            if ($file === '') {
+                return '';
+            }
             foreach ($bb_img_dirs as $dir) {
-                if (file_exists(get_theme_file_path($dir . $member['img']))) {
-                    return $dir . $member['img'];
+                if (file_exists(get_theme_file_path($dir . $file))) {
+                    return $dir . $file;
                 }
             }
             return '';
+        };
+
+        // Resolve both photos for a member. Falls back to the light photo for
+        // dark mode when no separate dark file exists.
+        $bb_member_photos = function ($member) use ($bb_find_img) {
+            $light = $bb_find_img($member['img']);
+
+            $dark = '';
+            if (!empty($member['img_dark'])) {
+                $dark = $bb_find_img($member['img_dark']);
+                // Same file as the light photo → not a real separate dark image.
+                if ($dark === $light) {
+                    $dark = '';
+                }
+            }
+
+            return array('light' => $light, 'dark' => $dark);
         };
         ?>
         <section class="hero" id="home">
@@ -191,27 +218,20 @@
                         <a href="#team" class="btn-secondary">Meet the team</a>
                     </div>
 
-                    <!-- AVATARS: an image element with a fallback -->
+                    <!-- AVATARS -->
                     <div class="hero-avatars">
                         <div class="avatar-stack">
                             <?php foreach ($bb_team as $member) :
-                                // Find the first folder that actually has this image
-                                $img_path = '';
-                                foreach ($bb_img_dirs as $dir) {
-                                    if (file_exists(get_theme_file_path($dir . $member['img']))) {
-                                        $img_path = $dir . $member['img'];
-                                        break;
-                                    }
-                                }
-                                $has_img = ($img_path !== '');
+                                $photo  = $bb_member_photos($member);
+                                $has_img = ($photo['light'] !== '');
                             ?>
                                 <span class="avatar<?php echo $has_img ? '' : ' is-fallback'; ?>" role="img" aria-label="<?php echo esc_attr($member['name']); ?>" title="<?php echo esc_attr($member['name']); ?>">
                                     <?php if ($has_img) : ?>
                                         <img
                                             src="<?php echo esc_url(add_query_arg(
                                                         'ver',
-                                                        filemtime(get_theme_file_path($img_path)),
-                                                        get_theme_file_uri($img_path)
+                                                        filemtime(get_theme_file_path($photo['light'])),
+                                                        get_theme_file_uri($photo['light'])
                                                     )); ?>"
                                             alt=""
                                             loading="lazy">
@@ -239,13 +259,16 @@
                     <!-- 4 vertical pill photos (one per member) -->
                     <div class="pill-row">
                         <?php foreach ($bb_team as $member) :
-                            $p_img = $bb_find_img($member);
+                            $photo   = $bb_member_photos($member);
+                            $p_img   = $photo['light'];
+                            $p_dark  = $photo['dark'];
                         ?>
                             <div class="pill-item">
-                                <figure class="pill<?php echo $p_img === '' ? ' is-fallback' : ''; ?>">
+                                <figure class="pill<?php echo $p_img === '' ? ' is-fallback' : ''; ?><?php echo $p_dark !== '' ? ' has-dark' : ''; ?>">
                                     <span class="pill-fallback" aria-hidden="true"><?php echo esc_html($member['initials']); ?></span>
                                     <?php if ($p_img !== '') : ?>
                                         <img
+                                            class="pill-img pill-img-light"
                                             src="<?php echo esc_url(add_query_arg(
                                                         'ver',
                                                         filemtime(get_theme_file_path($p_img)),
@@ -254,13 +277,25 @@
                                             alt="<?php echo esc_attr($member['name']); ?>"
                                             onerror="this.style.display='none'">
                                     <?php endif; ?>
-                                    <!-- Whole pill is clickable (opens the member's profile) -->
+                                    <?php if ($p_dark !== '') : ?>
+                                        <img
+                                            class="pill-img pill-img-dark"
+                                            src="<?php echo esc_url(add_query_arg(
+                                                        'ver',
+                                                        filemtime(get_theme_file_path($p_dark)),
+                                                        get_theme_file_uri($p_dark)
+                                                    )); ?>"
+                                            alt="<?php echo esc_attr($member['name']); ?>"
+                                            onerror="this.style.display='none'">
+                                    <?php endif; ?>
+
+                                    <!-- Whole pill is clickable -->
                                     <a
                                         href="<?php echo esc_url(bugbusters_member_url($member['slug'])); ?>"
                                         class="pill-cover"
                                         tabindex="-1"
                                         aria-hidden="true"></a>
-                                    <!-- Arrow link on the pill; it opens the member's profile -->
+                                    <!-- Arrow link -->
                                     <a
                                         href="<?php echo esc_url(bugbusters_member_url($member['slug'])); ?>"
                                         class="pill-link"
@@ -271,7 +306,7 @@
                                     </a>
                                 </figure>
 
-                                <!-- Name + role are outside the pill -->
+                                <!-- Name + role outside the pill -->
                                 <div class="pill-info">
                                     <strong><?php echo esc_html(explode(' ', $member['name'])[0]); ?></strong>
                                     <span><?php echo esc_html($member['role']); ?></span>
@@ -283,7 +318,7 @@
                     <!-- Horizontal separator under the pills -->
                     <div class="pill-separator" aria-hidden="true"><span></span></div>
 
-                    <!-- Below the pills: name + description, and </> -->
+                    <!-- Below the pills -->
                     <div class="visual-caption">
                         <div class="visual-caption-text">
                             <strong>BugBusters</strong>
@@ -378,7 +413,7 @@
                     </div>
                 </div>
 
-                <!-- bugbusters.dev card (moved here from the hero) -->
+                <!-- bugbusters.dev card -->
                 <div class="about-visual" aria-hidden="true">
                     <div class="visual-card about-card">
 
@@ -411,13 +446,6 @@
 
         <!-- OUR SKILL -->
         <?php
-        /*
-         * Edit the skill groups here.
-         * Each group has a title, a short description, an icon (SVG path data),
-         * a list of skills shown as chips, and 'members' = the team members
-         * related to it (0 = Justine, 1 = John, 2 = Kenneth, 3 = Angel,
-         * same order as $bb_team).
-         */
         $bb_skills = array(
             array(
                 'title'   => 'Web Development',
@@ -461,7 +489,6 @@
                 'tags'    => array('Git', 'GitHub', 'Claude Code', 'ChatGPT'),
                 'members' => array(2, 3),
             ),
-            // NEW: Technical Writer
             array(
                 'title'   => 'Technical Writing',
                 'desc'    => 'Clear documentation, user guides, and project reports.',
@@ -469,7 +496,6 @@
                 'tags'    => array('Documentation', 'Markdown', 'Google Docs', 'Notion'),
                 'members' => array(0),
             ),
-            // NEW: Project Manager
             array(
                 'title'   => 'Project Management',
                 'desc'    => 'Planning, scheduling, and keeping the team on track.',
@@ -479,11 +505,6 @@
             ),
         );
 
-        /*
-         * Logo for each technology chip (name must match the chip text).
-         * Reuses the marquee logos ($bb_tech) and adds a few more.
-         * A chip with no logo here is shown as text only.
-         */
         $bb_logos = $bb_tech + array(
             'Wireframing' => $bb_tech['Figma'],
             'Prototyping' => $bb_tech['Figma'],
@@ -511,8 +532,7 @@
                             <div class="skill-head">
                                 <div class="skill-icon" aria-hidden="true">
                                     <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                        <?php echo $skill['icon']; // Static SVG markup defined above. 
-                                        ?>
+                                        <?php echo $skill['icon']; ?>
                                     </svg>
                                 </div>
                                 <h3><?php echo esc_html($skill['title']); ?></h3>
@@ -549,7 +569,6 @@
                             </div>
 
                             <?php if (!empty($skill['members'])) : ?>
-                                <!-- Related team members -->
                                 <div class="skill-members">
                                     <p class="skill-members-label">
                                         <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -567,7 +586,8 @@
                                             <?php foreach ($skill['members'] as $idx) :
                                                 if (!isset($bb_team[$idx])) continue;
                                                 $m = $bb_team[$idx];
-                                                $m_img = $bb_find_img($m);
+                                                $m_photo = $bb_member_photos($m);
+                                                $m_img   = $m_photo['light'];
                                             ?>
                                                 <span class="avatar<?php echo $m_img !== '' ? '' : ' is-fallback'; ?>" role="img" aria-label="<?php echo esc_attr($m['name']); ?>" title="<?php echo esc_attr($m['name'] . ' – ' . $m['role']); ?>">
                                                     <?php if ($m_img !== '') : ?>
@@ -616,23 +636,19 @@
 
                 <div class="team-grid">
                     <?php foreach ($bb_team as $member) :
-                        // Look for the member's photo in the same folders as the hero avatars
-                        $img_path = '';
-                        foreach ($bb_img_dirs as $dir) {
-                            if (file_exists(get_theme_file_path($dir . $member['img']))) {
-                                $img_path = $dir . $member['img'];
-                                break;
-                            }
-                        }
+                        $photo  = $bb_member_photos($member);
+                        $t_img  = $photo['light'];
+                        $t_dark = $photo['dark'];
                     ?>
                         <div class="team-card" tabindex="0">
-                            <div class="member-image">
-                                <?php if ($img_path !== '') : ?>
+                            <div class="member-image<?php echo $t_dark !== '' ? ' has-dark' : ''; ?>">
+                                <?php if ($t_img !== '') : ?>
                                     <img
+                                        class="member-img member-img-light"
                                         src="<?php echo esc_url(add_query_arg(
                                                     'ver',
-                                                    filemtime(get_theme_file_path($img_path)),
-                                                    get_theme_file_uri($img_path)
+                                                    filemtime(get_theme_file_path($t_img)),
+                                                    get_theme_file_uri($t_img)
                                                 )); ?>"
                                         alt="<?php echo esc_attr($member['name']); ?>"
                                         loading="lazy">
@@ -642,9 +658,19 @@
                                         <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" />
                                     </svg>
                                 <?php endif; ?>
+                                <?php if ($t_dark !== '') : ?>
+                                    <img
+                                        class="member-img member-img-dark"
+                                        src="<?php echo esc_url(add_query_arg(
+                                                    'ver',
+                                                    filemtime(get_theme_file_path($t_dark)),
+                                                    get_theme_file_uri($t_dark)
+                                                )); ?>"
+                                        alt="<?php echo esc_attr($member['name']); ?>"
+                                        loading="lazy">
+                                <?php endif; ?>
                             </div>
 
-                            <!-- Name + role always visible; the rest shows on hover -->
                             <div class="member-info">
                                 <h3><?php echo esc_html($member['name']); ?></h3>
                                 <span class="member-role"><?php echo esc_html($member['role']); ?></span>
@@ -667,7 +693,6 @@
                         </div>
                     <?php endforeach; ?>
                 </div>
-
 
             </div>
         </section>
@@ -740,24 +765,20 @@
 
     <!-- FOOTER -->
     <?php
-    /*
-     * Social links: paste your real links in 'url'.
-     * Leave '#' if you don't have one yet (the icon stays but does nothing).
-     */
     $bb_socials = array(
         array(
             'name' => 'GitHub',
-            'url'  => '#', // e.g. https://github.com/your-team
+            'url'  => '#',
             'path' => 'M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12',
         ),
         array(
             'name' => 'Telegram',
-            'url'  => '#', // e.g. https://t.me/your-username
+            'url'  => '#',
             'path' => 'M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z',
         ),
         array(
             'name' => 'LinkedIn',
-            'url'  => '#', // e.g. https://www.linkedin.com/company/your-team
+            'url'  => '#',
             'path' => 'M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z',
         ),
     );
@@ -767,7 +788,6 @@
 
             <div class="footer-top">
 
-                <!-- Brand: logo + sentence + social icons -->
                 <div class="footer-brand">
                     <a href="<?php echo esc_url(home_url('/')); ?>" class="logo">
                         <img
@@ -803,7 +823,6 @@
                     </ul>
                 </div>
 
-                <!-- Navbar links -->
                 <nav class="footer-nav" aria-label="Footer">
                     <h4>Navigate</h4>
                     <ul>

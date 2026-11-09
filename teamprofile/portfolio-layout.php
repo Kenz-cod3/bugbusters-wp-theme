@@ -5,6 +5,19 @@
  * Do not edit the member details here - edit each member's own file
  * (page-justine.php, page-john.php, page-kenneth.php, page-angel.php).
  * Those files fill in $bb_member and then load this layout.
+ *
+ * Layout:
+ *   [ one card: photo | name + role (bottom), description (bottom), buttons (very bottom) ]
+ *   [ About card + Contact card (left) | Technical, Experience, Projects (right) ]
+ *
+ * Theme-aware photo:
+ *   'img'            = the member's photo. If it is the ONLY photo, it is shown
+ *                      in BOTH light and dark mode (default behavior for
+ *                      Justine, John, Angel).
+ *   'img_dark'       = optional separate dark-mode photo (Kenneth).
+ *                      When set and the file exists, it replaces 'img' in dark mode.
+ *   'img_hover'      = optional light-mode hover photo (Kenneth only).
+ *   'img_hover_dark' = optional dark-mode hover photo  (Kenneth only).
  */
 
 if (!isset($bb_member) || !is_array($bb_member)) {
@@ -12,29 +25,94 @@ if (!isset($bb_member) || !is_array($bb_member)) {
 }
 
 $bb_member = wp_parse_args($bb_member, array(
-    'name'      => '',
-    'role'      => '',
-    'initials'  => '',
-    'img'       => '',
-    'desc'      => '',
-    'bio'       => '',
-    'areas'     => array(),
-    'tags'      => array(),
-    'projects'  => array(),
-    'profile'   => '#',
-    'portfolio' => '',
+    'name'           => '',
+    'role'           => '',
+    'initials'       => '',
+    'img'            => '',
+    'img_dark'       => '',
+    'img_hover'      => '',
+    'img_hover_dark' => '',
+    'desc'           => '',
+    'bio'            => '',
+    'areas'          => array(),
+    'tags'           => array(),
+    'experience'     => array(),
+    'projects'       => array(),
+    'cv'             => '',
+    'github'         => '',
+    'profile'        => '#',
+    'portfolio'      => '',
 ));
 
-// Photo: looks in images/team/ first, then images/
-$bb_photo = '';
-foreach (array('/images/team/', '/images/') as $dir) {
-    if ($bb_member['img'] !== '' && file_exists(get_theme_file_path($dir . $bb_member['img']))) {
-        $bb_photo = $dir . $bb_member['img'];
-        break;
+/* Show the CV / GitHub buttons greyed out while a link is still empty.
+   Set to false to hide them until the link is filled in. */
+$bb_show_empty_buttons = true;
+
+// Photo lookup helper: returns the theme-relative path or '' if not found.
+$bb_find_photo = function ($file) {
+    if ($file === '') {
+        return '';
     }
+    foreach (array('/images/team/', '/images/') as $dir) {
+        if (file_exists(get_theme_file_path($dir . $file))) {
+            return $dir . $file;
+        }
+    }
+    return '';
+};
+
+// Light-mode photo (required)
+$bb_photo = $bb_find_photo($bb_member['img']);
+
+// Dark-mode photo — ONLY when the member actually supplies a separate,
+// existing dark file. Otherwise leave empty: no dark <img> is rendered and
+// the light <img> stays visible in both modes.
+$bb_photo_dark = $bb_find_photo($bb_member['img_dark']);
+if ($bb_photo_dark !== '' && $bb_photo_dark === $bb_photo) {
+    // Same file as the light photo → not a real separate dark image.
+    $bb_photo_dark = '';
+}
+
+// Hover photos — only used by members who opt in (Kenneth).
+$bb_photo_hover = $bb_find_photo($bb_member['img_hover']);
+
+$bb_photo_hover_dark = $bb_find_photo($bb_member['img_hover_dark']);
+if ($bb_photo_hover_dark === '') {
+    $bb_photo_hover_dark = $bb_photo_hover;
+}
+if ($bb_photo_hover_dark === $bb_photo_hover) {
+    $bb_photo_hover_dark = '';
 }
 
 $bb_lead = $bb_member['bio'] !== '' ? $bb_member['bio'] : $bb_member['desc'];
+
+/* CV: either a full link (Google Drive, etc.) or a file name saved in the
+   theme's cv/ folder (e.g. 'angel-cv.pdf'). Returns '' if nothing is found. */
+$bb_cv_url   = '';
+$bb_cv_local = false;
+$bb_cv       = trim((string) $bb_member['cv']);
+if ($bb_cv !== '') {
+    if (preg_match('#^https?://#i', $bb_cv)) {
+        $bb_cv_url = $bb_cv;
+    } else {
+        foreach (array('/cv/', '/files/', '/') as $dir) {
+            $path = $dir . ltrim($bb_cv, '/');
+            if (file_exists(get_theme_file_path($path))) {
+                $bb_cv_url   = get_theme_file_uri($path);
+                $bb_cv_local = true;
+                break;
+            }
+        }
+    }
+}
+$bb_cv_ext      = pathinfo((string) wp_parse_url($bb_cv_url, PHP_URL_PATH), PATHINFO_EXTENSION);
+$bb_cv_filename = sanitize_file_name($bb_member['name'] . ' CV') . '.' . ($bb_cv_ext !== '' ? $bb_cv_ext : 'pdf');
+
+/* GitHub: a full link or just the username. */
+$bb_github = trim((string) $bb_member['github']);
+if ($bb_github !== '' && !preg_match('#^https?://#i', $bb_github)) {
+    $bb_github = 'https://github.com/' . ltrim($bb_github, '@/');
+}
 
 // Technology logos
 $bb_base  = 'https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/';
@@ -69,12 +147,14 @@ $bb_logos = array(
     'Jira'        => 'https://cdn.simpleicons.org/jira/0052CC',
 );
 
+$bb_github_path = 'M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12';
+
 /* Social links (same as the footer on the home page) */
 $bb_socials = array(
     array(
         'name' => 'GitHub',
         'url'  => '#', // e.g. https://github.com/your-team
-        'path' => 'M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12',
+        'path' => $bb_github_path,
     ),
     array(
         'name' => 'Telegram',
@@ -121,7 +201,7 @@ $bb_socials = array(
             <nav class="main-nav" id="primary-nav" aria-label="Primary">
                 <a href="<?php echo esc_url(home_url('/#home')); ?>">Home</a>
                 <a href="<?php echo esc_url(home_url('/#about')); ?>">About</a>
-                <a href="<?php echo esc_url(home_url('/#skills')); ?>">Our Skill</a>
+                <a href="<?php echo esc_url(home_url('/#our-skill')); ?>">Our Skill</a>
                 <a href="<?php echo esc_url(home_url('/#team')); ?>">Team</a>
                 <a href="<?php echo esc_url(home_url('/#projects')); ?>">Projects</a>
                 <a href="<?php echo esc_url(bugbusters_contact_url()); ?>" class="nav-button">Contact us</a>
@@ -174,12 +254,15 @@ $bb_socials = array(
                     Back to team
                 </a>
 
-                <div class="mp-hero">
+                <!-- ============ TOP: ONE card wrapping photo + right side ============ -->
+                <!-- has-dark: only when a real separate dark photo exists (Kenneth). -->
+                <!-- has-hover: only when the member set an img_hover (Kenneth). -->
+                <header class="mp-hero-card<?php echo $bb_photo_hover !== '' ? ' has-hover' : ''; ?>">
 
-                    <div class="mp-photo<?php echo $bb_photo !== '' ? '' : ' is-fallback'; ?>">
+                    <div class="mp-photo<?php echo $bb_photo !== '' ? '' : ' is-fallback'; ?><?php echo $bb_photo_dark !== '' ? ' has-dark' : ''; ?>">
                         <?php if ($bb_photo !== '') : ?>
-
                             <img
+                                class="mp-photo-img mp-photo-light"
                                 src="<?php echo esc_url(add_query_arg(
                                             'ver',
                                             filemtime(get_theme_file_path($bb_photo)),
@@ -187,89 +270,230 @@ $bb_socials = array(
                                         )); ?>"
                                 alt="<?php echo esc_attr($bb_member['name']); ?>">
 
+                            <?php if ($bb_photo_dark !== '') : ?>
+                                <img
+                                    class="mp-photo-img mp-photo-dark"
+                                    src="<?php echo esc_url(add_query_arg(
+                                                'ver',
+                                                filemtime(get_theme_file_path($bb_photo_dark)),
+                                                get_theme_file_uri($bb_photo_dark)
+                                            )); ?>"
+                                    alt="<?php echo esc_attr($bb_member['name']); ?>">
+                            <?php endif; ?>
+
+                            <?php if ($bb_photo_hover !== '') : ?>
+                                <img
+                                    class="mp-photo-img mp-photo-hover mp-hover-light"
+                                    src="<?php echo esc_url(add_query_arg(
+                                                'ver',
+                                                filemtime(get_theme_file_path($bb_photo_hover)),
+                                                get_theme_file_uri($bb_photo_hover)
+                                            )); ?>"
+                                    alt="<?php echo esc_attr($bb_member['name']); ?>">
+                            <?php endif; ?>
+
+                            <?php if ($bb_photo_hover_dark !== '') : ?>
+                                <img
+                                    class="mp-photo-img mp-photo-hover mp-hover-dark"
+                                    src="<?php echo esc_url(add_query_arg(
+                                                'ver',
+                                                filemtime(get_theme_file_path($bb_photo_hover_dark)),
+                                                get_theme_file_uri($bb_photo_hover_dark)
+                                            )); ?>"
+                                    alt="<?php echo esc_attr($bb_member['name']); ?>">
+                            <?php endif; ?>
                         <?php else : ?>
-                            <span><?php echo esc_html($bb_member['initials']); ?></span>
+                            <span class="mp-photo-initials"><?php echo esc_html($bb_member['initials']); ?></span>
                         <?php endif; ?>
                     </div>
 
                     <div class="mp-intro">
-                        <p class="hero-label"><span class="status-dot"></span> Portfolio</p>
-                        <h1><?php echo esc_html($bb_member['name']); ?></h1>
-                        <span class="mp-role"><?php echo esc_html($bb_member['role']); ?></span>
-                        <p class="mp-lead"><?php echo esc_html($bb_lead); ?></p>
+                        <div class="mp-title">
+                            <h1 class="mp-name"><?php echo esc_html($bb_member['name']); ?></h1>
+                            <p class="mp-role"><?php echo esc_html($bb_member['role']); ?></p>
+                        </div>
 
-                        <div class="hero-buttons">
-                            <a href="<?php echo esc_url(bugbusters_contact_url()); ?>" class="btn-primary">Get in touch</a>
-                            <?php if ($bb_member['portfolio'] !== '') : ?>
-                                <a href="<?php echo esc_url($bb_member['portfolio']); ?>" class="btn-secondary" target="_blank" rel="noopener noreferrer">Full portfolio</a>
+                        <p class="mp-desc"><?php echo esc_html($bb_member['desc']); ?></p>
+
+                        <div class="mp-actions">
+
+                            <?php if ($bb_cv_url !== '') : ?>
+                                <a class="btn-primary mp-btn" href="<?php echo esc_url($bb_cv_url); ?>"
+                                    <?php echo $bb_cv_local ? 'download="' . esc_attr($bb_cv_filename) . '"' : 'target="_blank" rel="noopener noreferrer"'; ?>>
+                                    <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <path d="M12 3v12M7 10l5 5 5-5M5 21h14" />
+                                    </svg>
+                                    Download CV
+                                </a>
+                                <a class="btn-secondary mp-btn" href="<?php echo esc_url($bb_cv_url); ?>" target="_blank" rel="noopener noreferrer">
+                                    <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <path d="M14 3h7v7M21 3l-9 9M19 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5" />
+                                    </svg>
+                                    Open CV
+                                </a>
+                            <?php elseif ($bb_show_empty_buttons) : ?>
+                                <span class="btn-primary mp-btn is-disabled" aria-disabled="true" title="CV not added yet">
+                                    <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <path d="M12 3v12M7 10l5 5 5-5M5 21h14" />
+                                    </svg>
+                                    Download CV
+                                </span>
+                                <span class="btn-secondary mp-btn is-disabled" aria-disabled="true" title="CV not added yet">
+                                    <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <path d="M14 3h7v7M21 3l-9 9M19 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5" />
+                                    </svg>
+                                    Open CV
+                                </span>
                             <?php endif; ?>
-                            <?php if ($bb_member['profile'] !== '' && $bb_member['profile'] !== '#') : ?>
-                                <a href="<?php echo esc_url($bb_member['profile']); ?>" class="btn-secondary" target="_blank" rel="noopener noreferrer">Social profile</a>
+
+                            <?php if ($bb_github !== '') : ?>
+                                <a class="btn-secondary mp-btn" href="<?php echo esc_url($bb_github); ?>" target="_blank" rel="noopener noreferrer">
+                                    <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true">
+                                        <path d="<?php echo esc_attr($bb_github_path); ?>" />
+                                    </svg>
+                                    GitHub
+                                </a>
+                            <?php elseif ($bb_show_empty_buttons) : ?>
+                                <span class="btn-secondary mp-btn is-disabled" aria-disabled="true" title="GitHub not added yet">
+                                    <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true">
+                                        <path d="<?php echo esc_attr($bb_github_path); ?>" />
+                                    </svg>
+                                    GitHub
+                                </span>
                             <?php endif; ?>
+
                         </div>
                     </div>
 
-                </div>
+                </header>
 
-                <div class="mp-sections">
+                <div class="mp-body">
 
-                    <?php if (!empty($bb_member['areas'])) : ?>
-                        <div class="mp-card">
-                            <h2>Focus areas</h2>
-                            <ul class="skill-tags">
-                                <?php foreach ($bb_member['areas'] as $area) : ?>
-                                    <li><?php echo esc_html($area); ?></li>
-                                <?php endforeach; ?>
-                            </ul>
-                        </div>
-                    <?php endif; ?>
+                    <!-- ============ LEFT: About card + separate Contact card ============ -->
+                    <div class="mp-side">
 
-                    <?php if (!empty($bb_member['tags'])) : ?>
-                        <div class="mp-card">
-                            <h2>Technologies</h2>
-                            <ul class="skill-tags">
-                                <?php foreach ($bb_member['tags'] as $tag) :
-                                    $logo = isset($bb_logos[$tag])
-                                        ? (strpos($bb_logos[$tag], 'https://') === 0 ? $bb_logos[$tag] : $bb_base . $bb_logos[$tag])
-                                        : '';
-                                ?>
-                                    <li>
-                                        <?php if ($logo !== '') : ?>
-                                            <img src="<?php echo esc_url($logo); ?>" alt="" width="13" height="13" loading="lazy" onerror="this.style.display='none'">
-                                        <?php endif; ?>
-                                        <?php echo esc_html($tag); ?>
-                                    </li>
-                                <?php endforeach; ?>
-                            </ul>
-                        </div>
-                    <?php endif; ?>
+                        <aside class="mp-card mp-about" aria-labelledby="mp-about-title">
+                            <h2 id="mp-about-title">About</h2>
 
-                    <div class="mp-card">
-                        <h2>Projects</h2>
-                        <?php if (!empty($bb_member['projects'])) : ?>
-                            <div class="mp-projects">
-                                <?php foreach ($bb_member['projects'] as $proj) : ?>
-                                    <article class="mp-project">
-                                        <h3><?php echo esc_html($proj['title']); ?></h3>
-                                        <?php if (!empty($proj['desc'])) : ?>
-                                            <p><?php echo esc_html($proj['desc']); ?></p>
-                                        <?php endif; ?>
-                                        <?php if (!empty($proj['tags'])) : ?>
-                                            <ul class="skill-tags">
-                                                <?php foreach ($proj['tags'] as $t) : ?>
-                                                    <li><?php echo esc_html($t); ?></li>
-                                                <?php endforeach; ?>
-                                            </ul>
-                                        <?php endif; ?>
-                                        <?php if (!empty($proj['url'])) : ?>
-                                            <a class="mp-project-link" href="<?php echo esc_url($proj['url']); ?>" target="_blank" rel="noopener noreferrer">View project &rarr;</a>
-                                        <?php endif; ?>
-                                    </article>
-                                <?php endforeach; ?>
+                            <div class="mp-about-text">
+                                <?php echo wp_kses_post(wpautop(esc_html($bb_lead))); ?>
                             </div>
-                        <?php else : ?>
-                            <p class="mp-empty">Projects will be added soon.</p>
+
+                            <?php
+                            $bb_has_profile   = ($bb_member['profile'] !== '' && $bb_member['profile'] !== '#');
+                            $bb_has_portfolio = ($bb_member['portfolio'] !== '');
+                            ?>
+                            <?php if ($bb_has_profile || $bb_has_portfolio) : ?>
+                                <ul class="mp-links">
+                                    <?php if ($bb_has_portfolio) : ?>
+                                        <li><a href="<?php echo esc_url($bb_member['portfolio']); ?>" target="_blank" rel="noopener noreferrer">Full portfolio</a></li>
+                                    <?php endif; ?>
+                                    <?php if ($bb_has_profile) : ?>
+                                        <li><a href="<?php echo esc_url($bb_member['profile']); ?>" target="_blank" rel="noopener noreferrer">Social profile</a></li>
+                                    <?php endif; ?>
+                                </ul>
+                            <?php endif; ?>
+
+                        </aside>
+
+                        <section class="mp-card mp-contact-card" aria-labelledby="mp-contact-title">
+                            <h2 id="mp-contact-title">Contact</h2>
+                            <p>Have a project or a question? Send a message to the team.</p>
+                            <a href="<?php echo esc_url(bugbusters_contact_url()); ?>" class="btn-primary mp-contact">Contact us</a>
+                        </section>
+
+                    </div>
+
+                    <!-- ============ RIGHT: Technical, Experience, Projects ============ -->
+                    <div class="mp-main">
+
+                        <?php if (!empty($bb_member['areas']) || !empty($bb_member['tags'])) : ?>
+                            <section class="mp-card" aria-labelledby="mp-tech-title">
+                                <h2 id="mp-tech-title">Technical</h2>
+
+                                <?php if (!empty($bb_member['areas'])) : ?>
+                                    <h3 class="mp-sub">Focus areas</h3>
+                                    <ul class="skill-tags mp-areas">
+                                        <?php foreach ($bb_member['areas'] as $area) : ?>
+                                            <li><?php echo esc_html($area); ?></li>
+                                        <?php endforeach; ?>
+                                    </ul>
+                                <?php endif; ?>
+
+                                <?php if (!empty($bb_member['tags'])) : ?>
+                                    <h3 class="mp-sub">Tools and technologies</h3>
+                                    <ul class="mp-tech">
+                                        <?php foreach ($bb_member['tags'] as $tag) :
+                                            $logo = isset($bb_logos[$tag])
+                                                ? (strpos($bb_logos[$tag], 'https://') === 0 ? $bb_logos[$tag] : $bb_base . $bb_logos[$tag])
+                                                : '';
+                                        ?>
+                                            <li>
+                                                <?php if ($logo !== '') : ?>
+                                                    <img src="<?php echo esc_url($logo); ?>" alt="" width="22" height="22" loading="lazy" onerror="this.style.display='none'">
+                                                <?php endif; ?>
+                                                <span><?php echo esc_html($tag); ?></span>
+                                            </li>
+                                        <?php endforeach; ?>
+                                    </ul>
+                                <?php endif; ?>
+                            </section>
                         <?php endif; ?>
+
+                        <section class="mp-card" aria-labelledby="mp-exp-title">
+                            <h2 id="mp-exp-title">Experience</h2>
+                            <?php if (!empty($bb_member['experience'])) : ?>
+                                <ol class="mp-timeline">
+                                    <?php foreach ($bb_member['experience'] as $job) : ?>
+                                        <li>
+                                            <h3><?php echo esc_html(isset($job['role']) ? $job['role'] : ''); ?></h3>
+                                            <p class="mp-meta">
+                                                <?php if (!empty($job['org'])) : ?>
+                                                    <span class="mp-org"><?php echo esc_html($job['org']); ?></span>
+                                                <?php endif; ?>
+                                                <?php if (!empty($job['period'])) : ?>
+                                                    <span class="mp-period"><?php echo esc_html($job['period']); ?></span>
+                                                <?php endif; ?>
+                                            </p>
+                                            <?php if (!empty($job['desc'])) : ?>
+                                                <p class="mp-job-desc"><?php echo esc_html($job['desc']); ?></p>
+                                            <?php endif; ?>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ol>
+                            <?php else : ?>
+                                <p class="mp-empty">Experience will be added soon.</p>
+                            <?php endif; ?>
+                        </section>
+
+                        <section class="mp-card" aria-labelledby="mp-proj-title">
+                            <h2 id="mp-proj-title">Projects</h2>
+                            <?php if (!empty($bb_member['projects'])) : ?>
+                                <div class="mp-projects">
+                                    <?php foreach ($bb_member['projects'] as $proj) : ?>
+                                        <article class="mp-project">
+                                            <h3><?php echo esc_html($proj['title']); ?></h3>
+                                            <?php if (!empty($proj['desc'])) : ?>
+                                                <p><?php echo esc_html($proj['desc']); ?></p>
+                                            <?php endif; ?>
+                                            <?php if (!empty($proj['tags'])) : ?>
+                                                <ul class="skill-tags">
+                                                    <?php foreach ($proj['tags'] as $t) : ?>
+                                                        <li><?php echo esc_html($t); ?></li>
+                                                    <?php endforeach; ?>
+                                                </ul>
+                                            <?php endif; ?>
+                                            <?php if (!empty($proj['url'])) : ?>
+                                                <a class="mp-project-link" href="<?php echo esc_url($proj['url']); ?>" target="_blank" rel="noopener noreferrer">View project &rarr;</a>
+                                            <?php endif; ?>
+                                        </article>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php else : ?>
+                                <p class="mp-empty">Projects will be added soon.</p>
+                            <?php endif; ?>
+                        </section>
+
                     </div>
 
                 </div>

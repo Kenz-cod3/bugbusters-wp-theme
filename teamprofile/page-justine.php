@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Template Name: Portfolio - Justine
  * Description: Portfolio page of Justine Harvey Jaraula. Edit the details below to update the page.
