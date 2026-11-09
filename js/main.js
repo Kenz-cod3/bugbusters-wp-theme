@@ -411,6 +411,180 @@
         update();
     })();
 
+    /* ---------- Contact form: show the email of the chosen "Send to" ---------- */
+    (function initSendTo() {
+        var select = document.getElementById('bb_to');
+        var out = document.getElementById('bb_to_email');
+        if (!select || !out) return;
+
+        function show() {
+            var opt = select.options[select.selectedIndex];
+            out.textContent = opt ? opt.getAttribute('data-email') || '' : '';
+        }
+
+        select.addEventListener('change', show);
+        show();
+    })();
+
+    /* ---------- Contact form: styled "Send to" dropdown ---------- */
+    (function initSelectUI() {
+        var select = document.getElementById('bb_to');
+        if (!select) return;
+
+        var CHEVRON = '<svg class="cp-chevron" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+        var CHECK = '<svg class="cp-check" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+        var MAIL = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>';
+
+        var wrap = document.createElement('div');
+        wrap.className = 'cp-select';
+
+        var trigger = document.createElement('button');
+        trigger.type = 'button';
+        trigger.className = 'cp-select-trigger';
+        trigger.setAttribute('aria-haspopup', 'listbox');
+        trigger.setAttribute('aria-expanded', 'false');
+
+        var list = document.createElement('ul');
+        list.className = 'cp-select-list';
+        list.setAttribute('role', 'listbox');
+        list.id = 'bb_to_list';
+        list.hidden = true;
+        trigger.setAttribute('aria-controls', list.id);
+
+        function iconFor(opt) {
+            var box = document.createElement('span');
+            box.className = 'cp-opt-icon';
+            var img = opt.getAttribute('data-img');
+            if (img) {
+                var im = document.createElement('img');
+                im.src = img;
+                im.alt = '';
+                im.loading = 'lazy';
+                box.appendChild(im);
+            } else if (opt.getAttribute('data-initials')) {
+                box.textContent = opt.getAttribute('data-initials');
+            } else {
+                box.classList.add('is-mail');
+                box.innerHTML = MAIL;
+            }
+            return box;
+        }
+
+        function textFor(opt) {
+            var t = document.createElement('span');
+            t.className = 'cp-opt-text';
+            var a = document.createElement('strong');
+            a.textContent = opt.textContent;
+            var b = document.createElement('small');
+            b.textContent = opt.getAttribute('data-email') || '';
+            t.appendChild(a);
+            t.appendChild(b);
+            return t;
+        }
+
+        var items = [];
+        Array.prototype.forEach.call(select.options, function (opt, i) {
+            var li = document.createElement('li');
+            li.className = 'cp-select-option';
+            li.setAttribute('role', 'option');
+            li.id = 'bb_to_opt_' + i;
+            li.appendChild(iconFor(opt));
+            li.appendChild(textFor(opt));
+            var tick = document.createElement('span');
+            tick.className = 'cp-opt-tick';
+            tick.innerHTML = CHECK;
+            li.appendChild(tick);
+            li.addEventListener('click', function () { choose(i); close(true); });
+            li.addEventListener('mousemove', function () { setActive(i); });
+            list.appendChild(li);
+            items.push(li);
+        });
+
+        wrap.appendChild(trigger);
+        wrap.appendChild(list);
+        select.parentNode.insertBefore(wrap, select.nextSibling);
+        select.classList.add('cp-select-native');
+        select.tabIndex = -1;
+        select.setAttribute('aria-hidden', 'true');
+
+        var active = select.selectedIndex;
+
+        function renderTrigger() {
+            var opt = select.options[select.selectedIndex];
+            trigger.innerHTML = '';
+            trigger.appendChild(iconFor(opt));
+            trigger.appendChild(textFor(opt));
+            trigger.insertAdjacentHTML('beforeend', CHEVRON);
+            items.forEach(function (li, i) {
+                li.setAttribute('aria-selected', i === select.selectedIndex ? 'true' : 'false');
+                li.classList.toggle('is-selected', i === select.selectedIndex);
+            });
+        }
+
+        function setActive(i) {
+            active = Math.max(0, Math.min(items.length - 1, i));
+            items.forEach(function (li, n) { li.classList.toggle('is-active', n === active); });
+            trigger.setAttribute('aria-activedescendant', items[active].id);
+            items[active].scrollIntoView({ block: 'nearest' });
+        }
+
+        function choose(i) {
+            if (select.selectedIndex !== i) {
+                select.selectedIndex = i;
+                select.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+            renderTrigger();
+        }
+
+        function isOpen() { return !list.hidden; }
+
+        function open() {
+            list.hidden = false;
+            wrap.classList.add('is-open');
+            trigger.setAttribute('aria-expanded', 'true');
+            setActive(select.selectedIndex);
+        }
+
+        function close(focusTrigger) {
+            list.hidden = true;
+            wrap.classList.remove('is-open');
+            trigger.setAttribute('aria-expanded', 'false');
+            trigger.removeAttribute('aria-activedescendant');
+            if (focusTrigger) trigger.focus();
+        }
+
+        trigger.addEventListener('click', function () { isOpen() ? close(false) : open(); });
+
+        trigger.addEventListener('keydown', function (e) {
+            var k = e.key;
+            if (k === 'ArrowDown' || k === 'ArrowUp') {
+                e.preventDefault();
+                if (!isOpen()) { open(); return; }
+                setActive(active + (k === 'ArrowDown' ? 1 : -1));
+            } else if (k === 'Home' && isOpen()) {
+                e.preventDefault(); setActive(0);
+            } else if (k === 'End' && isOpen()) {
+                e.preventDefault(); setActive(items.length - 1);
+            } else if (k === 'Enter' || k === ' ') {
+                if (isOpen()) { e.preventDefault(); choose(active); close(true); }
+            } else if (k === 'Escape' && isOpen()) {
+                e.preventDefault(); close(true);
+            } else if (k === 'Tab' && isOpen()) {
+                close(false);
+            }
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!wrap.contains(e.target)) close(false);
+        });
+
+        // Clicking the "Send to" label focuses the new dropdown
+        var label = document.querySelector('label[for="bb_to"]');
+        if (label) label.addEventListener('click', function (e) { e.preventDefault(); trigger.focus(); });
+
+        renderTrigger();
+    })();
+
     /* ---------- Navigation ---------- */
     var header = document.getElementById('site-header');
     var toggle = document.querySelector('.nav-toggle');
