@@ -50,7 +50,7 @@ $GLOBALS['bb_guard'] = array(
     /* ----- GCash payment (shown in the popup on screenshot attempt) ----- */
     'show_gcash'         => true,                 // show QR + name in the popup
     'qr_image'           => '/images/payment.png', // path inside your theme folder
-    'gcash_name'         => 'YOUR FULL NAME',     // <- change: name shown under the QR
+    'gcash_name'         => 'Kenneth Carl Milarpis',     // <- change: name shown under the QR
     'gcash_number'       => '09XX XXX XXXX',      // <- change: GCash number (leave '' to hide)
 );
 
