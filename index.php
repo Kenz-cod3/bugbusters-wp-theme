@@ -455,40 +455,41 @@
                             <div class="skill-head">
                                 <div class="skill-icon" aria-hidden="true">
                                     <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                        <?php echo $skill['icon']; // Static SVG markup defined above. ?>
+                                        <?php echo $skill['icon']; // Static SVG markup defined above. 
+                                        ?>
                                     </svg>
                                 </div>
                                 <h3><?php echo esc_html($skill['title']); ?></h3>
                             </div>
                             <p><?php echo esc_html($skill['desc']); ?></p>
                             <div class="skill-tech">
-                            <p class="skill-members-label">
-                                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                    <polyline points="16 18 22 12 16 6" />
-                                    <polyline points="8 6 2 12 8 18" />
-                                </svg>
-                                <span>Related technologies</span>
-                            </p>
-                            <ul class="skill-tags">
-                                <?php foreach ($skill['tags'] as $tag) :
-                                    $logo = isset($bb_logos[$tag])
-                                        ? (strpos($bb_logos[$tag], 'https://') === 0 ? $bb_logos[$tag] : $bb_base . $bb_logos[$tag])
-                                        : '';
-                                ?>
-                                    <li>
-                                        <?php if ($logo !== '') : ?>
-                                            <img
-                                                src="<?php echo esc_url($logo); ?>"
-                                                alt=""
-                                                width="13"
-                                                height="13"
-                                                loading="lazy"
-                                                onerror="this.style.display='none'">
-                                        <?php endif; ?>
-                                        <?php echo esc_html($tag); ?>
-                                    </li>
-                                <?php endforeach; ?>
-                            </ul>
+                                <p class="skill-members-label">
+                                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <polyline points="16 18 22 12 16 6" />
+                                        <polyline points="8 6 2 12 8 18" />
+                                    </svg>
+                                    <span>Related technologies</span>
+                                </p>
+                                <ul class="skill-tags">
+                                    <?php foreach ($skill['tags'] as $tag) :
+                                        $logo = isset($bb_logos[$tag])
+                                            ? (strpos($bb_logos[$tag], 'https://') === 0 ? $bb_logos[$tag] : $bb_base . $bb_logos[$tag])
+                                            : '';
+                                    ?>
+                                        <li>
+                                            <?php if ($logo !== '') : ?>
+                                                <img
+                                                    src="<?php echo esc_url($logo); ?>"
+                                                    alt=""
+                                                    width="13"
+                                                    height="13"
+                                                    loading="lazy"
+                                                    onerror="this.style.display='none'">
+                                            <?php endif; ?>
+                                            <?php echo esc_html($tag); ?>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
                             </div>
 
                             <?php if (!empty($skill['members'])) : ?>
@@ -506,31 +507,31 @@
                                         <span class="skill-count" aria-label="<?php echo esc_attr($member_count); ?> related <?php echo $member_count > 1 ? 'members' : 'member'; ?>"><?php echo esc_html($member_count); ?></span>
                                     </p>
                                     <div class="skill-members-row">
-                                    <div class="avatar-stack">
-                                        <?php foreach ($skill['members'] as $idx) :
-                                            if (!isset($bb_team[$idx])) continue;
-                                            $m = $bb_team[$idx];
-                                            $m_img = $bb_find_img($m);
-                                        ?>
-                                            <span class="avatar<?php echo $m_img !== '' ? '' : ' is-fallback'; ?>" role="img" aria-label="<?php echo esc_attr($m['name']); ?>" title="<?php echo esc_attr($m['name'] . ' – ' . $m['role']); ?>">
-                                                <?php if ($m_img !== '') : ?>
-                                                    <img src="<?php echo esc_url(get_theme_file_uri($m_img)); ?>" alt="" loading="lazy">
-                                                <?php endif; ?>
-                                                <span class="avatar-fallback" aria-hidden="true"><?php echo esc_html($m['initials']); ?></span>
-                                            </span>
-                                        <?php endforeach; ?>
-                                    </div>
-                                    <span class="skill-members-names">
-                                        <?php
-                                        $names = array();
-                                        foreach ($skill['members'] as $idx) {
-                                            if (isset($bb_team[$idx])) {
-                                                $names[] = explode(' ', $bb_team[$idx]['name'])[0];
+                                        <div class="avatar-stack">
+                                            <?php foreach ($skill['members'] as $idx) :
+                                                if (!isset($bb_team[$idx])) continue;
+                                                $m = $bb_team[$idx];
+                                                $m_img = $bb_find_img($m);
+                                            ?>
+                                                <span class="avatar<?php echo $m_img !== '' ? '' : ' is-fallback'; ?>" role="img" aria-label="<?php echo esc_attr($m['name']); ?>" title="<?php echo esc_attr($m['name'] . ' – ' . $m['role']); ?>">
+                                                    <?php if ($m_img !== '') : ?>
+                                                        <img src="<?php echo esc_url(get_theme_file_uri($m_img)); ?>" alt="" loading="lazy">
+                                                    <?php endif; ?>
+                                                    <span class="avatar-fallback" aria-hidden="true"><?php echo esc_html($m['initials']); ?></span>
+                                                </span>
+                                            <?php endforeach; ?>
+                                        </div>
+                                        <span class="skill-members-names">
+                                            <?php
+                                            $names = array();
+                                            foreach ($skill['members'] as $idx) {
+                                                if (isset($bb_team[$idx])) {
+                                                    $names[] = explode(' ', $bb_team[$idx]['name'])[0];
+                                                }
                                             }
-                                        }
-                                        echo esc_html(implode(', ', $names));
-                                        ?>
-                                    </span>
+                                            echo esc_html(implode(', ', $names));
+                                            ?>
+                                        </span>
                                     </div>
                                 </div>
                             <?php endif; ?>
@@ -565,7 +566,11 @@
                             <div class="member-image">
                                 <?php if ($img_path !== '') : ?>
                                     <img
-                                        src="<?php echo esc_url(get_theme_file_uri($img_path)); ?>"
+                                        src="<?php echo esc_url(add_query_arg(
+                                                    'ver',
+                                                    filemtime(get_theme_file_path($img_path)),
+                                                    get_theme_file_uri($img_path)
+                                                )); ?>"
                                         alt="<?php echo esc_attr($member['name']); ?>"
                                         loading="lazy">
                                 <?php else : ?>
@@ -589,7 +594,9 @@
                                             class="member-link"
                                             aria-label="View portfolio of <?php echo esc_attr($member['name']); ?>">
                                             View profile
-                                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                <path d="M5 12h14M13 6l6 6-6 6" />
+                                            </svg>
                                         </a>
                                     </div>
                                 </div>
