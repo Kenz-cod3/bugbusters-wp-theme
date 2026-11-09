@@ -39,7 +39,7 @@ $GLOBALS['bb_guard'] = array(
     'watermark_text'     => 'PREVIEW - PAYMENT PENDING',
     'watermark_opacity'  => 0.30,   // 0.1 (faint) to 0.6 (very strong)
     'watermark_mode'     => 'on_capture', // 'on_capture' = shows only on screenshot triggers, 'always' = always visible
-    'mobile_always'      => true,   // true = on phones/tablets the watermark is ALWAYS visible (screenshots cannot be detected there)
+    'mobile_always'      => false,   // true = on phones/tablets the watermark is ALWAYS visible (screenshots cannot be detected there)
     'reveal_seconds'     => 5,      // how long the watermark stays after a trigger (on_capture mode)
     'blur_on_focus_loss' => true,   // blur when window loses focus / tab hidden / mouse leaves
     'block_right_click'  => true,   // disable right-click menu
