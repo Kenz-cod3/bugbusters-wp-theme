@@ -39,6 +39,7 @@ $GLOBALS['bb_guard'] = array(
     'watermark_text'     => 'PREVIEW - PAYMENT PENDING',
     'watermark_opacity'  => 0.30,   // 0.1 (faint) to 0.6 (very strong)
     'watermark_mode'     => 'on_capture', // 'on_capture' = shows only on screenshot triggers, 'always' = always visible
+    'mobile_always'      => true,   // true = on phones/tablets the watermark is ALWAYS visible (screenshots cannot be detected there)
     'reveal_seconds'     => 5,      // how long the watermark stays after a trigger (on_capture mode)
     'blur_on_focus_loss' => true,   // blur when window loses focus / tab hidden / mouse leaves
     'block_right_click'  => true,   // disable right-click menu
@@ -183,6 +184,7 @@ add_action('wp_footer', function () {
                 opacity: <?php echo json_encode($opacity); ?>,
                 mode: <?php echo wp_json_encode($mode); ?>,
                 revealMs: <?php echo (int) $reveal * 1000; ?>,
+                mobileAlways: <?php echo $g['mobile_always'] ? 'true' : 'false'; ?>,
                 blurOnFocusLoss: <?php echo $g['blur_on_focus_loss'] ? 'true' : 'false'; ?>,
                 blockRightClick: <?php echo $g['block_right_click'] ? 'true' : 'false'; ?>
             };
@@ -192,6 +194,13 @@ add_action('wp_footer', function () {
             if (!modal || !closeBtn) return;
 
             /* ================= WATERMARK (self-repairing) ================= */
+
+            // Phones / tablets: screenshots cannot be detected, so keep the watermark always on
+            var isMobile = (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) ||
+                /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+            if (CFG.mobileAlways && isMobile) {
+                CFG.mode = 'always';
+            }
 
             var stamp = new Date().toLocaleString();
 
