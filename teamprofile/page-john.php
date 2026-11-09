@@ -12,8 +12,8 @@ $bb_member = array(
     'name'      => 'John Micheal Jaranilla',
     'role'      => 'Analyst',
     'initials'  => 'JM',
-    'img'       => 'member-01glass.png',   // light mode photo
-    'img_dark'  => 'member-01.png',        // dark mode photo
+    'img'       => 'member-01.png',   // light mode photo
+    'img_dark'  => 'member-01glass.png',        // dark mode photo
     'desc'      => 'Studies requirements and data to make sure every solution solves the right problem.',
     'bio'       => '',                     // <- write a longer "About me" here (empty = uses 'desc')
     'areas'     => array('Backend & Database', 'UI/UX Design'),

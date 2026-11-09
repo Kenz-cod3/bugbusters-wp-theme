@@ -134,8 +134,8 @@
                 'name'     => 'John Micheal Jaranilla',
                 'role'     => 'Analyst',
                 'initials' => 'JM',
-                'img'      => 'member-01glass.png', // light mode
-                'img_dark' => 'member-01.png',      // dark mode
+                'img'      => 'member-01.png', // light mode
+                'img_dark' => 'member-01glass.png',      // dark mode
                 'desc'     => 'Studies requirements and data to make sure every solution solves the right problem.',
                 'profile'  => '#',
                 'slug'     => 'john',
@@ -144,8 +144,8 @@
                 'name'     => 'Kenneth Carl Milarpis',
                 'role'     => 'Programmer',
                 'initials' => 'KC',
-                'img'      => 'member-03glass.png', // light mode
-                'img_dark' => 'member-03.png',      // dark mode  <-- only Kenneth has this
+                'img'      => 'member-03.png', // light mode
+                'img_dark' => 'member-03glass.png',      // dark mode  <-- only Kenneth has this
                 'desc'     => 'Writes and tests the code that brings our designs and ideas to life.',
                 'profile'  => '#',
                 'slug'     => 'kenneth',
