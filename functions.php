@@ -623,3 +623,43 @@ function bugbusters_chat_markup() {
     <?php
 }
 add_action('wp_footer', 'bugbusters_chat_markup');
+
+/* =====================================================================
+   MAIL (SMTP) - makes the contact form really send emails.
+   Uses the BB_SMTP_* values you set in wp-config.php:
+     BB_CONTACT_FROM, BB_SMTP_HOST, BB_SMTP_PORT, BB_SMTP_USER, BB_SMTP_PASS
+   ===================================================================== */
+function bugbusters_smtp_setup($phpmailer) {
+    if (!defined('BB_SMTP_HOST') || !defined('BB_SMTP_USER') || !defined('BB_SMTP_PASS')) {
+        return; // not configured: leave the WordPress default
+    }
+
+    // Still the placeholder values from the template? Skip SMTP so local
+    // testing (e.g. LocalWP's Mailpit) keeps working until real ones are set.
+    if (strpos(BB_SMTP_USER, 'yourdomain.com') !== false || BB_SMTP_PASS === 'password-ng-mailbox') {
+        return;
+    }
+
+    $port = defined('BB_SMTP_PORT') ? (int) BB_SMTP_PORT : 465;
+
+    $phpmailer->isSMTP();
+    $phpmailer->Host       = BB_SMTP_HOST;
+    $phpmailer->Port       = $port;
+    $phpmailer->SMTPAuth   = true;
+    $phpmailer->Username   = BB_SMTP_USER;
+    $phpmailer->Password   = BB_SMTP_PASS;
+    $phpmailer->SMTPSecure = ($port === 465) ? 'ssl' : 'tls';
+    $phpmailer->CharSet    = 'UTF-8';
+
+    // The "From" address must match the mailbox, or the SMTP server rejects it.
+    $from = defined('BB_CONTACT_FROM') ? BB_CONTACT_FROM : BB_SMTP_USER;
+    $phpmailer->setFrom($from, 'BugBusters Website', false);
+}
+add_action('phpmailer_init', 'bugbusters_smtp_setup');
+
+/* If sending fails, write the real reason to wp-content/debug.log
+   (turn on WP_DEBUG + WP_DEBUG_LOG in wp-config.php to see it). */
+function bugbusters_mail_failed($error) {
+    error_log('BugBusters mail error: ' . $error->get_error_message());
+}
+add_action('wp_mail_failed', 'bugbusters_mail_failed');

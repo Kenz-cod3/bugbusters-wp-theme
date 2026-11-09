@@ -130,6 +130,48 @@ $bb_socials = array(
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <?php wp_head(); ?>
+    <style>
+        /* Loading + disabled state of the "Send message" button */
+        .cp-submit { position: relative; }
+        /* Bar loader: |||||| */
+        .cp-spinner {
+            display: none;
+            align-items: center;
+            gap: 3px;
+            height: 18px;
+        }
+        .cp-spinner i {
+            display: block;
+            width: 3px;
+            height: 100%;
+            border-radius: 2px;
+            background: currentColor;
+            transform-origin: center;
+            animation: cp-bars .9s ease-in-out infinite;
+        }
+        .cp-spinner i:nth-child(2) { animation-delay: .1s; }
+        .cp-spinner i:nth-child(3) { animation-delay: .2s; }
+        .cp-spinner i:nth-child(4) { animation-delay: .3s; }
+        .cp-spinner i:nth-child(5) { animation-delay: .4s; }
+        .cp-submit.is-loading,
+        .cp-submit:disabled {
+            pointer-events: none;
+            cursor: not-allowed;
+            opacity: .65;
+        }
+        .cp-submit.is-loading { cursor: progress; }
+        .cp-submit.is-loading .cp-spinner { display: inline-flex; }
+        .cp-submit.is-loading .cp-submit-arrow { display: none; }
+        .cp-form.is-sending .cp-field { opacity: .6; pointer-events: none; }
+        .cp-sending-note { margin: .75rem 0 0; font-size: .9rem; opacity: .8; }
+        @keyframes cp-bars {
+            0%, 40%, 100% { transform: scaleY(.35); opacity: .5; }
+            20%           { transform: scaleY(1);   opacity: 1; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .cp-spinner i { animation-duration: 1.8s; }
+        }
+    </style>
 </head>
 
 <body <?php body_class('page-contact'); ?>>
@@ -320,7 +362,7 @@ $bb_socials = array(
                             </div>
                         <?php endif; ?>
 
-                        <form class="cp-form" method="post" action="<?php echo esc_url($bb_page . '#contact-form'); ?>" novalidate>
+                        <form class="cp-form" id="bb-contact-form" method="post" action="<?php echo esc_url($bb_page . '#contact-form'); ?>" novalidate>
 
                             <div class="cp-field">
                                 <label for="bb_to">Send to</label>
@@ -364,12 +406,18 @@ $bb_socials = array(
 
                             <?php wp_nonce_field('bb_contact', 'bb_contact_nonce'); ?>
 
-                            <button type="submit" name="bb_contact_submit" value="1" class="btn-primary cp-submit">
-                                Send message
-                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <!-- Sent with the form even when the button gets disabled.
+                                 (A disabled button is NOT posted, so the server reads this instead.) -->
+                            <input type="hidden" name="bb_contact_submit" value="1">
+
+                            <button type="submit" class="btn-primary cp-submit" id="bb-submit">
+                                <span class="cp-submit-label">Send message</span>
+                                <svg class="cp-submit-arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <path d="M5 12h14M13 6l6 6-6 6" />
                                 </svg>
+                                <span class="cp-spinner" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
                             </button>
+                            <p class="cp-sending-note" id="bb-sending-note" role="status" aria-live="polite" hidden>Sending your message, please wait...</p>
 
                         </form>
                     </div>
@@ -443,6 +491,53 @@ $bb_socials = array(
 
         </div>
     </footer>
+
+    <script>
+        /* Disable the Send button as soon as it is clicked, show a spinner,
+           and block double submits (click, Enter key, etc.) */
+        (function () {
+            var form = document.getElementById('bb-contact-form');
+            var btn = document.getElementById('bb-submit');
+            var note = document.getElementById('bb-sending-note');
+            if (!form || !btn) return;
+
+            var label = btn.querySelector('.cp-submit-label');
+            var original = label ? label.textContent : '';
+            var sending = false;
+
+            function reset() {
+                sending = false;
+                btn.disabled = false;
+                btn.classList.remove('is-loading');
+                btn.removeAttribute('aria-busy');
+                form.classList.remove('is-sending');
+                if (label) label.textContent = original;
+                if (note) note.hidden = true;
+            }
+
+            form.addEventListener('submit', function (e) {
+                if (sending) {          // already sending: ignore extra clicks / Enter presses
+                    e.preventDefault();
+                    return;
+                }
+                sending = true;
+                btn.classList.add('is-loading');
+                btn.setAttribute('aria-busy', 'true');
+                form.classList.add('is-sending');
+                if (label) label.textContent = 'Sending...';
+                if (note) note.hidden = false;
+
+                // Disable the button AFTER the browser has started the submit.
+                // The hidden "bb_contact_submit" input keeps the server working.
+                setTimeout(function () { btn.disabled = true; }, 0);
+            });
+
+            // Back/forward button restores the page: enable the button again
+            window.addEventListener('pageshow', function (e) {
+                if (e.persisted) reset();
+            });
+        })();
+    </script>
 
     <?php wp_footer(); ?>
 

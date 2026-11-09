@@ -317,7 +317,7 @@
             'Git'        => 'git/git-original.svg',
             'Figma'      => 'figma/figma-original.svg',
             'Claude Code' => 'https://cdn.simpleicons.org/claude/D97757',
-            'ChatGPT'     => 'https://cdn.simpleicons.org/openai/10A37F',
+            'ChatGPT'     => 'https://cdn.jsdelivr.net/npm/simple-icons@15/icons/openai.svg',
         );
         $bb_base = 'https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/';
         ?>
