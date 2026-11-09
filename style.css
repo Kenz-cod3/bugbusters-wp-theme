@@ -2857,3 +2857,360 @@ html[data-theme="dark"] .cp-alert-error {
   font-family: inherit;
   cursor: pointer;
 }
+
+/* ========================================
+   HERO: 4 vertical pill photos
+======================================== */
+
+.pill-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  align-items: stretch;
+  gap: 14px;
+  min-height: 470px; /* same pill height as before + room for the name under it */
+}
+
+.pill {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--accent-soft);
+  box-shadow: 0 24px 48px -22px rgba(16, 35, 29, 0.35);
+}
+
+/* Pill + name move together. Staggered: 1 & 3 sit high, 2 & 4 sit low (bottoms don't line up) */
+.pill-item {
+  display: flex;
+  flex-direction: column;
+  animation: pill-float 6s ease-in-out infinite;
+}
+
+.pill-item .pill {
+  flex: 1;
+}
+
+.pill-item:nth-child(odd) {
+  margin-bottom: 44px;
+}
+
+.pill-item:nth-child(even) {
+  margin-top: 44px;
+  animation-delay: -3s;
+}
+
+html[data-theme="dark"] .pill {
+  box-shadow: 0 24px 48px -22px rgba(0, 0, 0, 0.65);
+}
+
+.pill img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+
+/* Shown when there is no photo yet */
+.pill-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--accent-dark);
+}
+
+.pill-label {
+  position: absolute;
+  inset: auto 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 44px 6px 30px;
+  background: linear-gradient(to top, rgba(10, 20, 16, 0.78), transparent);
+  text-align: center;
+  line-height: 1.3;
+  color: #ffffff;
+}
+
+.pill-label strong {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.pill-label span {
+  font-size: 10.5px;
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+@keyframes pill-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* ========================================
+   ABOUT: text + bugbusters.dev card
+======================================== */
+
+.about-layout {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  align-items: center;
+  gap: 64px;
+}
+
+.about-main .section-heading {
+  margin-bottom: 36px;
+}
+
+.about-main .about-grid {
+  grid-template-columns: 1fr;
+  gap: 28px;
+}
+
+.about-visual {
+  width: 100%;
+}
+
+.about-card {
+  animation: card-float 6s ease-in-out infinite;
+}
+
+@keyframes card-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Blinking cursor after "Ready to innovate" */
+.code-cursor {
+  display: inline-block;
+  width: 7px;
+  height: 14px;
+  margin-left: 2px;
+  background: #6ee7b7;
+  animation: cursor-blink 1s steps(1) infinite;
+}
+
+@keyframes cursor-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 860px) {
+  .pill-row {
+    max-width: 560px;
+    width: 100%;
+    min-height: 430px;
+  }
+
+  .about-layout {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+
+  .about-visual {
+    max-width: 560px;
+  }
+}
+
+@media (max-width: 600px) {
+  .pill-row {
+    gap: 8px;
+    min-height: 380px;
+  }
+
+  .pill-item:nth-child(odd) {
+    margin-bottom: 28px;
+  }
+
+  .pill-item:nth-child(even) {
+    margin-top: 28px;
+  }
+
+  .pill-fallback {
+    font-size: 20px;
+  }
+
+  .pill-label {
+    padding: 30px 2px 20px;
+  }
+
+  .pill-label strong {
+    font-size: 11px;
+  }
+
+  .pill-label span {
+    display: none;
+  }
+}
+
+
+/* Separator under the pill photos: grey line that fades out on both sides,
+   with a small theme-colored dot in the middle */
+.pill-separator {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  margin: 26px 0 0;
+}
+
+.pill-separator::before,
+.pill-separator::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+}
+
+.pill-separator::before {
+  background: linear-gradient(to right, transparent, #cfd6d2);
+}
+
+.pill-separator::after {
+  background: linear-gradient(to left, transparent, #cfd6d2);
+}
+
+.pill-separator span {
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+
+html[data-theme="dark"] .pill-separator::before {
+  background: linear-gradient(to right, transparent, #2c3f36);
+}
+
+html[data-theme="dark"] .pill-separator::after {
+  background: linear-gradient(to left, transparent, #2c3f36);
+}
+
+.pill-separator + .visual-caption {
+  margin-top: 18px;
+}
+
+/* ========================================
+   HERO: name + role outside the pill, arrow link on the pill
+======================================== */
+
+.pill-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 12px;
+  text-align: center;
+  line-height: 1.35;
+}
+
+.pill-info strong {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.pill-info span {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+/* Arrow link at the bottom of the pill: translucent + blurred, no hover animation */
+.pill-link {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-left: -18px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  backdrop-filter: blur(10px) saturate(140%);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  color: #ffffff;
+  transition: none;
+}
+
+.pill-link svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Invisible layer: makes the whole pill clickable */
+.pill-cover {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+/* Hover / click on the pill (or the arrow itself, or keyboard focus):
+   the arrow takes the theme color (follows light / dark theme), no animation */
+.pill:hover .pill-link,
+.pill:active .pill-link,
+.pill-link:hover,
+.pill-link:focus-visible {
+  background: var(--accent);
+  border-color: var(--accent);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  color: #ffffff;
+}
+
+@media (max-width: 600px) {
+  .pill-info strong {
+    font-size: 12px;
+  }
+
+  .pill-info span {
+    font-size: 10.5px;
+  }
+
+  .pill-link {
+    bottom: 10px;
+    width: 28px;
+    height: 28px;
+    margin-left: -14px;
+  }
+
+  .pill-link svg {
+    width: 13px;
+    height: 13px;
+  }
+}
+
+/* ========================================
+   HERO: "Meet the builders" stays right under the buttons
+   (no longer pushed down to line up with the "BugBusters" caption)
+======================================== */
+
+@media (min-width: 861px) {
+  .hero-avatars {
+    margin-top: 0;
+    height: auto;
+  }
+}

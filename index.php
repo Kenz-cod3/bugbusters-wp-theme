@@ -225,9 +225,9 @@
 
                 </div>
 
-                <div class="hero-visual" aria-hidden="true">
+                <div class="hero-visual">
 
-                    <!-- Above the card (outside it) -->
+                    <!-- Above the pills -->
                     <div class="visual-heading">
                         <span class="visual-heading-title">Get to know us</span>
                         <span class="visual-heading-count">
@@ -236,32 +236,54 @@
                         </span>
                     </div>
 
-                    <div class="visual-card">
+                    <!-- 4 vertical pill photos (one per member) -->
+                    <div class="pill-row">
+                        <?php foreach ($bb_team as $member) :
+                            $p_img = $bb_find_img($member);
+                        ?>
+                            <div class="pill-item">
+                                <figure class="pill<?php echo $p_img === '' ? ' is-fallback' : ''; ?>">
+                                    <span class="pill-fallback" aria-hidden="true"><?php echo esc_html($member['initials']); ?></span>
+                                    <?php if ($p_img !== '') : ?>
+                                        <img
+                                            src="<?php echo esc_url(add_query_arg(
+                                                        'ver',
+                                                        filemtime(get_theme_file_path($p_img)),
+                                                        get_theme_file_uri($p_img)
+                                                    )); ?>"
+                                            alt="<?php echo esc_attr($member['name']); ?>"
+                                            onerror="this.style.display='none'">
+                                    <?php endif; ?>
+                                    <!-- Whole pill is clickable (opens the member's profile) -->
+                                    <a
+                                        href="<?php echo esc_url(bugbusters_member_url($member['slug'])); ?>"
+                                        class="pill-cover"
+                                        tabindex="-1"
+                                        aria-hidden="true"></a>
+                                    <!-- Arrow link on the pill; it opens the member's profile -->
+                                    <a
+                                        href="<?php echo esc_url(bugbusters_member_url($member['slug'])); ?>"
+                                        class="pill-link"
+                                        aria-label="View portfolio of <?php echo esc_attr($member['name']); ?>">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                            <path d="M7 17L17 7M8 7h9v9" />
+                                        </svg>
+                                    </a>
+                                </figure>
 
-                        <div class="visual-top">
-                            <span class="code-dot red"></span>
-                            <span class="code-dot yellow"></span>
-                            <span class="code-dot green"></span>
-                            <span class="code-label">bugbusters.dev</span>
-                        </div>
-
-                        <div class="code-content">
-                            <span class="code-comment">// Our mission</span>
-                            <p><span class="code-purple">const</span> team = {</p>
-                            <p class="code-indent">name: <span class="code-green">"BugBusters"</span>,</p>
-                            <p class="code-indent">passion: <span class="code-green">"Technology"</span>,</p>
-                            <p class="code-indent">mission: <span class="code-green">"Build solutions"</span></p>
-                            <p>};</p>
-
-                            <div class="code-result">
-                                <span class="status-dot"></span>
-                                Ready to innovate...
+                                <!-- Name + role are outside the pill -->
+                                <div class="pill-info">
+                                    <strong><?php echo esc_html(explode(' ', $member['name'])[0]); ?></strong>
+                                    <span><?php echo esc_html($member['role']); ?></span>
+                                </div>
                             </div>
-                        </div>
-
+                        <?php endforeach; ?>
                     </div>
 
-                    <!-- Below the card (outside it): name + description, and </> -->
+                    <!-- Horizontal separator under the pills -->
+                    <div class="pill-separator" aria-hidden="true"><span></span></div>
+
+                    <!-- Below the pills: name + description, and </> -->
                     <div class="visual-caption">
                         <div class="visual-caption-text">
                             <strong>BugBusters</strong>
@@ -325,33 +347,63 @@
 
         <!-- ABOUT -->
         <section class="about section-padding" id="about">
-            <div class="container">
+            <div class="container about-layout">
 
-                <div class="section-heading">
-                    <h2>More than just coders.</h2>
-                    <p>
-                        We are a group of aspiring IT professionals driven by
-                        curiosity and the goal of making technology useful.
-                    </p>
+                <div class="about-main">
+                    <div class="section-heading">
+                        <h2>More than just coders.</h2>
+                        <p>
+                            We are a group of aspiring IT professionals driven by
+                            curiosity and the goal of making technology useful.
+                        </p>
+                    </div>
+
+                    <div class="about-grid">
+
+                        <div class="about-item">
+                            <h3>Innovation</h3>
+                            <p>We turn creative ideas into practical digital solutions.</p>
+                        </div>
+
+                        <div class="about-item">
+                            <h3>Collaboration</h3>
+                            <p>We combine our skills to achieve more together.</p>
+                        </div>
+
+                        <div class="about-item">
+                            <h3>Continuous learning</h3>
+                            <p>We take on new challenges and keep improving our skills.</p>
+                        </div>
+
+                    </div>
                 </div>
 
-                <div class="about-grid">
+                <!-- bugbusters.dev card (moved here from the hero) -->
+                <div class="about-visual" aria-hidden="true">
+                    <div class="visual-card about-card">
 
-                    <div class="about-item">
-                        <h3>Innovation</h3>
-                        <p>We turn creative ideas into practical digital solutions.</p>
+                        <div class="visual-top">
+                            <span class="code-dot red"></span>
+                            <span class="code-dot yellow"></span>
+                            <span class="code-dot green"></span>
+                            <span class="code-label">bugbusters.dev</span>
+                        </div>
+
+                        <div class="code-content">
+                            <span class="code-comment">// Our mission</span>
+                            <p><span class="code-purple">const</span> team = {</p>
+                            <p class="code-indent">name: <span class="code-green">"BugBusters"</span>,</p>
+                            <p class="code-indent">passion: <span class="code-green">"Technology"</span>,</p>
+                            <p class="code-indent">mission: <span class="code-green">"Build solutions"</span></p>
+                            <p>};</p>
+
+                            <div class="code-result">
+                                <span class="status-dot"></span>
+                                Ready to innovate<span class="code-cursor"></span>
+                            </div>
+                        </div>
+
                     </div>
-
-                    <div class="about-item">
-                        <h3>Collaboration</h3>
-                        <p>We combine our skills to achieve more together.</p>
-                    </div>
-
-                    <div class="about-item">
-                        <h3>Continuous learning</h3>
-                        <p>We take on new challenges and keep improving our skills.</p>
-                    </div>
-
                 </div>
 
             </div>
