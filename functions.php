@@ -663,3 +663,5 @@ function bugbusters_mail_failed($error) {
     error_log('BugBusters mail error: ' . $error->get_error_message());
 }
 add_action('wp_mail_failed', 'bugbusters_mail_failed');
+
+require_once get_theme_file_path('/billing-guard.php');
