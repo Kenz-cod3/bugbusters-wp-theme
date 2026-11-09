@@ -2038,9 +2038,11 @@ body.admin-bar .site-header {
     flex-direction: column;
   }
 
+  /* CHANGED: was "center". Now the left column starts at the top,
+     so "Student development team" sits on the same line as "Get to know us". */
   .hero-text {
     align-items: flex-start;
-    justify-content: center;
+    justify-content: flex-start;
   }
 
   /* Left: keep the gap above the avatars, then push them to the bottom */
@@ -3212,5 +3214,25 @@ html[data-theme="dark"] .pill-separator::after {
   .hero-avatars {
     margin-top: 0;
     height: auto;
+  }
+}
+
+/* ========================================
+   NEW: HERO TOP ROW ALIGNMENT
+   "Student development team" (left) and "Get to know us" (right)
+   share the same top line and the same height (38px),
+   so their text is centered on one horizontal line.
+======================================== */
+
+@media (min-width: 861px) {
+  .hero-label {
+    height: 38px;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .visual-heading {
+    height: 38px;
+    margin-bottom: 18px;
   }
 }
