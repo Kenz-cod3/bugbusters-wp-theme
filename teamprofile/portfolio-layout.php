@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Shared layout for the member portfolio pages.
  * Do not edit the member details here - edit each member's own file
@@ -167,7 +168,9 @@ $bb_socials = array(
             <div class="container">
 
                 <a href="<?php echo esc_url(home_url('/#team')); ?>" class="mp-back">
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M19 12H5M11 6l-6 6 6 6" />
+                    </svg>
                     Back to team
                 </a>
 
@@ -175,7 +178,15 @@ $bb_socials = array(
 
                     <div class="mp-photo<?php echo $bb_photo !== '' ? '' : ' is-fallback'; ?>">
                         <?php if ($bb_photo !== '') : ?>
-                            <img src="<?php echo esc_url(get_theme_file_uri($bb_photo)); ?>" alt="<?php echo esc_attr($bb_member['name']); ?>">
+
+                            <img
+                                src="<?php echo esc_url(add_query_arg(
+                                            'ver',
+                                            filemtime(get_theme_file_path($bb_photo)),
+                                            get_theme_file_uri($bb_photo)
+                                        )); ?>"
+                                alt="<?php echo esc_attr($bb_member['name']); ?>">
+
                         <?php else : ?>
                             <span><?php echo esc_html($bb_member['initials']); ?></span>
                         <?php endif; ?>

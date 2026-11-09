@@ -270,7 +270,14 @@ $bb_socials = array(
                                     <li>
                                         <span class="cp-avatar<?php echo $img !== '' ? '' : ' is-fallback'; ?>" aria-hidden="true">
                                             <?php if ($img !== '') : ?>
-                                                <img src="<?php echo esc_url(get_theme_file_uri($img)); ?>" alt="" loading="lazy">
+                                                <img
+                                                    src="<?php echo esc_url(add_query_arg(
+                                                                'ver',
+                                                                filemtime(get_theme_file_path($img)),
+                                                                get_theme_file_uri($img)
+                                                            )); ?>"
+                                                    alt=""
+                                                    loading="lazy">
                                             <?php else : ?>
                                                 <?php echo esc_html($member['initials']); ?>
                                             <?php endif; ?>
