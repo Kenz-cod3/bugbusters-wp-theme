@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Template Name: Contact Us
  * Description: Contact page with a working form (sent through wp_mail).
@@ -44,7 +45,14 @@ foreach ($bb_team as $bb_m) {
     $bb_opt_init[$bb_m['slug']] = $bb_m['initials'];
     foreach (array('/images/team/', '/images/') as $bb_dir) {
         if (file_exists(get_theme_file_path($bb_dir . $bb_m['img']))) {
-            $bb_opt_img[$bb_m['slug']] = get_theme_file_uri($bb_dir . $bb_m['img']);
+            $bb_image_path = $bb_dir . $bb_m['img'];
+            $bb_image_file = get_theme_file_path($bb_image_path);
+
+            $bb_opt_img[$bb_m['slug']] = add_query_arg(
+                'ver',
+                filemtime($bb_image_file),
+                get_theme_file_uri($bb_image_path)
+            );
             break;
         }
     }
@@ -270,7 +278,9 @@ $bb_socials = array(
                                         <span class="cp-team-name"><?php echo esc_html($member['name']); ?></span>
                                         <a href="<?php echo esc_url(bugbusters_member_url($member['slug'])); ?>" class="cp-team-link" aria-label="View profile of <?php echo esc_attr($member['name']); ?>">
                                             View profile
-                                            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                                            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                <path d="M5 12h14M13 6l6 6-6 6" />
+                                            </svg>
                                         </a>
                                     </li>
                                 <?php endforeach; ?>
