@@ -1,7 +1,7 @@
 <?php
 
 /**
- * BugBusters Billing Guard (v2)
+ * BugBusters Billing Guard (v3)
  * ------------------------------------------------------------------
  * - Dense "PREVIEW - PAYMENT PENDING" watermark with date/time, so any
  *   screenshot (even from a phone) shows it and can be traced.
@@ -11,6 +11,8 @@
  * - Blur when the tab is hidden, the window loses focus, or the mouse
  *   leaves the page (optional).
  * - Right-click, image dragging and text selection are disabled.
+ * - GCash QR (images/payment.png) + account name + number are shown
+ *   in the popup ONLY when a screenshot / print attempt is detected.
  *
  * NOTE: A website can NEVER truly detect or block screenshots.
  * The watermark is the real protection. Everything else only
@@ -34,16 +36,22 @@ if (!defined('BB_BILLING_GUARD')) {
 $GLOBALS['bb_guard'] = array(
     'title'              => 'Screenshots are not allowed',
     'message'            => 'This website is a preview and the payment is still pending. Please settle the billing to get the final version.',
-    'contact'            => 'bugbusters@example.com',   // <- change to your real email
+    'contact'            => 'sipralim105@gmail.com',   // <- change to your real email
     'button'             => 'I understand',
     'watermark_text'     => 'PREVIEW - PAYMENT PENDING',
     'watermark_opacity'  => 0.30,   // 0.1 (faint) to 0.6 (very strong)
     'watermark_mode'     => 'on_capture', // 'on_capture' = shows only on screenshot triggers, 'always' = always visible
-    'mobile_always'      => false,   // true = on phones/tablets the watermark is ALWAYS visible (screenshots cannot be detected there)
+    'mobile_always'      => false,   // true = on phones/tablets the watermark is ALWAYS visible
     'reveal_seconds'     => 5,      // how long the watermark stays after a trigger (on_capture mode)
     'blur_on_focus_loss' => true,   // blur when window loses focus / tab hidden / mouse leaves
     'block_right_click'  => true,   // disable right-click menu
     'show_to_admin'      => false,  // false = logged-in admins do not see the guard
+
+    /* ----- GCash payment (shown in the popup on screenshot attempt) ----- */
+    'show_gcash'         => true,                 // show QR + name in the popup
+    'qr_image'           => '/images/payment.png', // path inside your theme folder
+    'gcash_name'         => 'YOUR FULL NAME',     // <- change: name shown under the QR
+    'gcash_number'       => '09XX XXX XXXX',      // <- change: GCash number (leave '' to hide)
 );
 
 /* ---------- Output (printed before </body>) ---------- */
@@ -63,6 +71,15 @@ add_action('wp_footer', function () {
     $opacity = max(0.05, min(0.8, (float) $g['watermark_opacity']));
     $mode    = ($g['watermark_mode'] === 'always') ? 'always' : 'on_capture';
     $reveal  = max(1, (int) $g['reveal_seconds']);
+
+    // GCash QR: only show if enabled and the image file really exists
+    $qr_url = '';
+    if (!empty($g['show_gcash']) && !empty($g['qr_image'])) {
+        $qr_path = get_theme_file_path($g['qr_image']);
+        if (file_exists($qr_path)) {
+            $qr_url = get_theme_file_uri($g['qr_image']);
+        }
+    }
 ?>
     <!-- BILLING GUARD -->
     <div class="bb-watermark" aria-hidden="true"></div>
@@ -71,6 +88,19 @@ add_action('wp_footer', function () {
         <div class="bb-billing-box">
             <h2 id="bb-billing-title"><?php echo esc_html($g['title']); ?></h2>
             <p><?php echo esc_html($g['message']); ?></p>
+
+            <?php if ($qr_url) : ?>
+                <div class="bb-pay">
+                    <img src="<?php echo esc_url($qr_url); ?>" alt="GCash QR code" class="bb-pay-qr" draggable="false">
+                    <?php if (!empty($g['gcash_name'])) : ?>
+                        <p class="bb-pay-name"><?php echo esc_html($g['gcash_name']); ?></p>
+                    <?php endif; ?>
+                    <?php if (!empty($g['gcash_number'])) : ?>
+                        <p class="bb-pay-num">GCash: <?php echo esc_html($g['gcash_number']); ?></p>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+
             <p><strong>Contact:</strong> <?php echo esc_html($g['contact']); ?></p>
             <button type="button" id="bb-billing-close"><?php echo esc_html($g['button']); ?></button>
         </div>
@@ -105,6 +135,7 @@ add_action('wp_footer', function () {
             justify-content: center;
             background: rgba(0, 0, 0, .8);
             padding: 1rem;
+            overflow-y: auto;
         }
 
         .bb-billing[hidden] {
@@ -116,6 +147,8 @@ add_action('wp_footer', function () {
             color: #111;
             max-width: 420px;
             width: 100%;
+            max-height: 94vh;
+            overflow-y: auto;
             padding: 2rem;
             border-radius: 16px;
             text-align: center;
@@ -145,6 +178,41 @@ add_action('wp_footer', function () {
 
         .bb-billing-box button:hover {
             background: #b91c1c;
+        }
+
+        /* GCash block */
+        .bb-pay {
+            margin: 1rem 0 .8rem;
+            padding: 1rem;
+            border: 2px solid #007cff;
+            border-radius: 14px;
+            background: #f2f8ff;
+        }
+
+        .bb-pay-qr {
+            display: block;
+            width: 100%;
+            max-width: 240px;
+            height: auto;
+            margin: 0 auto .7rem;
+            border-radius: 10px;
+            background: #fff;
+            pointer-events: none;
+            -webkit-user-drag: none;
+        }
+
+        .bb-pay-name {
+            margin: 0 !important;
+            font-weight: 800;
+            font-size: 1.05rem;
+            color: #0a58ca;
+            text-transform: uppercase;
+        }
+
+        .bb-pay-num {
+            margin: .15rem 0 0 !important;
+            font-weight: 600;
+            color: #333;
         }
 
         /* Blur everything except the guard itself */
