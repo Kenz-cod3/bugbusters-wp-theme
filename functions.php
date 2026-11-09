@@ -84,7 +84,7 @@ function bugbusters_required_pages() {
         'justine' => array('Justine Harvey Jaraula', 'teamprofile/page-justine.php'),
         'john'    => array('John Micheal Jaranilla', 'teamprofile/page-john.php'),
         'kenneth' => array('Kenneth Carl Milarpis', 'teamprofile/page-kenneth.php'),
-        'angel'   => array('Angel Grace Salinga', 'teamprofile/page-angel.php'),
+        'angel'   => array('Angel Grace Salingay', 'teamprofile/page-angel.php'),
     );
 }
 
@@ -272,7 +272,7 @@ function bugbusters_chat_knowledge() {
             array(
                 'slug'   => 'angel',
                 'keys'   => array('angel', 'grace', 'salinga'),
-                'name'   => 'Angel Grace Salinga',
+                'name'   => 'Angel Grace Salingay',
                 'role'   => 'Project Manager',
                 'about'  => 'Plans the schedule, guides the team, and keeps every project on track.',
                 'skills' => 'Git, GitHub, Planning, Trello, Jira, Notion',
@@ -340,7 +340,10 @@ function bugbusters_chat_system_prompt() {
           . "Answer ONLY about the team, its members, skills, projects and how to contact them, "
           . "using the information below. Reply in the same language the visitor uses (English, Tagalog, Bisaya or Taglish). "
           . "Keep answers short (max 3 sentences). If the answer is not in the information, say you are not sure "
-          . "and suggest the Contact page. Never invent projects, prices or contact details.\n\n"
+          . "and suggest the Contact page. Never invent projects, prices or contact details. "
+          . "If the visitor only greets you (hi, hello, good morning, good afternoon, good evening, magandang umaga, maayong buntag), "
+          . "greet them back in one short sentence in the same language and ask what they would like to know. "
+          . "Do not repeat a long welcome message.\n\n"
           . $k['team_desc'] . "\n\nTeam members:\n";
 
     foreach ($k['members'] as $m) {
@@ -383,9 +386,11 @@ function bugbusters_chat_ai_answer($history) {
         return array('text' => null, 'error' => 'BB_GEMINI_API_KEY is missing in wp-config.php');
     }
 
+    @set_time_limit(90); // allow for slow retries across several models
+
     // Fastest first. A chatbot FAQ does not need a big "thinking" model.
     $main   = defined('BB_GEMINI_MODEL') ? BB_GEMINI_MODEL : 'gemini-flash-lite-latest';
-    $models = array_values(array_unique(array($main, 'gemini-flash-latest', 'gemini-3.8-flash')));
+    $models = array_values(array_unique(array($main, 'gemini-flash-latest', 'gemini-2.5-flash')));
 
     $contents = array();
     foreach ($history as $h) {
@@ -398,7 +403,7 @@ function bugbusters_chat_ai_answer($history) {
     $system = bugbusters_chat_system_prompt();
 
     $make_body = function ($fast) use ($system, $contents) {
-        $config = array('maxOutputTokens' => 1500, 'temperature' => 0.4);
+        $config = array('maxOutputTokens' => 800, 'temperature' => 0.4);
         if ($fast) {
             $config['thinkingConfig'] = array('thinkingLevel' => 'low'); // quicker replies
         }
@@ -409,7 +414,7 @@ function bugbusters_chat_ai_answer($history) {
         ));
     };
 
-    $last_error = 'Unknown error';
+    $errors = array();
 
     foreach ($models as $model) {
 
@@ -429,7 +434,7 @@ function bugbusters_chat_ai_answer($history) {
             $secs = round(microtime(true) - $t, 1);
 
             if (is_wp_error($response)) {
-                $last_error = $model . ' - connection error: ' . $response->get_error_message();
+                $errors[] = $model . ' - connection error: ' . $response->get_error_message();
                 continue 2; // next model
             }
 
@@ -444,12 +449,12 @@ function bugbusters_chat_ai_answer($history) {
                         'info'  => $model . ', ' . $secs . 's',
                     );
                 }
-                $last_error = $model . ' - empty answer (it may have been blocked).';
+                $errors[] = $model . ' - empty answer (it may have been blocked).';
                 continue 2;
             }
 
-            $msg        = isset($data['error']['message']) ? $data['error']['message'] : 'Unknown error';
-            $last_error = $model . ' - Gemini error ' . $code . ': ' . $msg;
+            $msg      = isset($data['error']['message']) ? $data['error']['message'] : 'Unknown error';
+            $errors[] = $model . ' - Gemini error ' . $code . ': ' . $msg;
 
             // 400 with the thinking option: the model does not support it -> retry plain.
             if ($code === 400 && $fast) {
@@ -462,11 +467,11 @@ function bugbusters_chat_ai_answer($history) {
             }
 
             // Anything else (bad key, bad request...) will not be fixed by another model.
-            return array('text' => null, 'error' => $last_error);
+            return array('text' => null, 'error' => implode(' | ', $errors));
         }
     }
 
-    return array('text' => null, 'error' => $last_error);
+    return array('text' => null, 'error' => $errors ? implode(' | ', $errors) : 'Unknown error');
 }
 
 /**
@@ -569,7 +574,8 @@ function bugbusters_chat_assets() {
 
     wp_localize_script('bugbusters-chatbot', 'BBChat', array(
         'url'     => esc_url_raw(rest_url('bugbusters/v1/chat')),
-        'welcome' => 'Hi! 👋 I\'m the BugBusters assistant. How can I help you?',
+        // {greeting} is replaced in chatbot.js with Good morning / afternoon / evening
+        'welcome' => '{greeting}! 👋 I\'m the BugBusters assistant. How can I help you?',
         'quick'   => array(), // add quick-reply buttons here if you want, e.g. array('Who is on the team?')
     ));
 }

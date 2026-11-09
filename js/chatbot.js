@@ -16,6 +16,55 @@
     var busy = false;
     var started = false;
 
+    // Greeting based on the visitor's own clock
+    function getGreeting() {
+        var h = new Date().getHours();
+        if (h >= 5 && h < 12) return 'Good morning';
+        if (h >= 12 && h < 18) return 'Good afternoon';
+        return 'Good evening';
+    }
+
+    // Turns http(s):// and www. links inside text into real clickable links.
+    // Built with text nodes + createElement (never innerHTML), so it stays safe.
+    function appendWithLinks(el, text) {
+        var re = /(https?:\/\/[^\s<>"']+|www\.[^\s<>"']+)/gi;
+        var last = 0;
+        var m;
+
+        while ((m = re.exec(text)) !== null) {
+            var url = m[0];
+            var trail = '';
+
+            // keep punctuation at the end of a sentence outside the link
+            var punct = url.match(/[.,;:!?)\]]+$/);
+            if (punct) {
+                trail = punct[0];
+                url = url.slice(0, -trail.length);
+            }
+
+            if (m.index > last) {
+                el.appendChild(document.createTextNode(text.slice(last, m.index)));
+            }
+
+            var a = document.createElement('a');
+            a.href = /^www\./i.test(url) ? 'https://' + url : url;
+            a.textContent = url;
+            a.className = 'bb-link';
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+            el.appendChild(a);
+
+            if (trail) {
+                el.appendChild(document.createTextNode(trail));
+            }
+            last = m.index + m[0].length;
+        }
+
+        if (last < text.length) {
+            el.appendChild(document.createTextNode(text.slice(last)));
+        }
+    }
+
     function scrollDown() {
         log.scrollTop = log.scrollHeight;
     }
@@ -23,7 +72,11 @@
     function addMessage(text, who, links) {
         var el = document.createElement('div');
         el.className = 'bb-msg bb-msg-' + who;
-        el.textContent = text; // textContent = safe from HTML injection
+        if (who === 'bot') {
+            appendWithLinks(el, text); // clickable links, still safe from HTML injection
+        } else {
+            el.textContent = text; // textContent = safe from HTML injection
+        }
 
         if (links && links.length) {
             var wrap = document.createElement('div');
@@ -60,7 +113,7 @@
         if (open) {
             if (!started) {
                 started = true;
-                addMessage(BBChat.welcome, 'bot');
+                addMessage(BBChat.welcome.replace('{greeting}', getGreeting()), 'bot');
                 (BBChat.quick || []).forEach(function (q) {
                     var b = document.createElement('button');
                     b.type = 'button';

@@ -1,14 +1,14 @@
 <?php
 /**
  * Template Name: Portfolio - Angel
- * Description: Portfolio page of Angel Grace Salinga. Edit the details below to update the page.
+ * Description: Portfolio page of Angel Grace Salingay. Edit the details below to update the page.
  *
  * The page is created automatically (slug "angel"). If you ever make it by hand:
- * Pages > Add New > title it "Angel Grace Salinga" > Template: "Portfolio - Angel".
+ * Pages > Add New > title it "Angel Grace Salingay" > Template: "Portfolio - Angel".
  */
 
 $bb_member = array(
-    'name'      => 'Angel Grace Salinga',
+    'name'      => 'Angel Grace Salingay',
     'role'      => 'Project Manager',
     'initials'  => 'AG',
     'img'       => 'member-02.png',                 // photo in images/ (or images/team/)
