@@ -733,7 +733,15 @@ function bugbusters_visits_page()
                                 <td><?php echo esc_html($bm !== '' ? $bm : '(unknown)'); ?></td>
                                 <td><?php echo esc_html($v->os); ?></td>
                                 <td><?php echo esc_html($v->browser); ?></td>
-                                <td><?php echo esc_html($v->ip !== '' ? $v->ip : '(not stored)'); ?></td>
+                                <td>
+                                    <?php echo esc_html($v->ip !== '' ? $v->ip : '(not stored)'); ?>
+                                    <?php if ($v->ip !== '') : ?>
+                                        <br><a href="<?php echo esc_url(admin_url('admin.php?page=bb-blocked&type=ip&value=' . rawurlencode($v->ip))); ?>">Block IP</a>
+                                        <?php if ($v->model !== '') : ?>
+                                            | <a href="<?php echo esc_url(admin_url('admin.php?page=bb-blocked&type=model&value=' . rawurlencode($v->model))); ?>">Block model</a>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                </td>
                                 <td><?php echo esc_html(bugbusters_visits_location_text($v)); ?></td>
                                 <td>
                                     <?php if ($v->lat !== null && $v->lng !== null) : ?>

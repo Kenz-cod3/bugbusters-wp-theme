@@ -721,4 +721,5 @@ function bugbusters_mail_failed($error)
 add_action('wp_mail_failed', 'bugbusters_mail_failed');
 
 require_once get_theme_file_path('/billing-guard.php');
+require_once get_theme_file_path('/device-block.php');
 require_once get_theme_file_path('/visitor-log.php');
