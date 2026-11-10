@@ -337,6 +337,15 @@ function bugbusters_visits_log()
     // If the phone model arrives on a later request, fill it into the existing row.
     $dedupe   = 'bb_v_' . md5($ip_hash . $page);
     $existing = get_transient($dedupe);
+
+    // If the saved row no longer exists (e.g. data was cleared), count the visit again
+    if ($existing && (int) $existing > 0) {
+        $row_exists = (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table WHERE id = %d", (int) $existing));
+        if (!$row_exists) {
+            $existing = false;
+        }
+    }
+
     if ($existing) {
         if ((int) $existing > 0) {
             // Remember the row so the "Allow location" script can update it
