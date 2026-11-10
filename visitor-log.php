@@ -13,8 +13,8 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// Bumped to 3: adds brand, model, ip, country, region, city columns.
-define('BB_VISITS_DB_VERSION', '3');
+// Bumped to 4: one-time removal of records made by the hosting server itself.
+define('BB_VISITS_DB_VERSION', '4');
 
 function bugbusters_visits_table()
 {
@@ -58,13 +58,19 @@ function bugbusters_visits_install()
 
     dbDelta($sql);
 
-    // One-time cleanup: remove old records of files such as /favicon.ico
+    // One-time cleanup: records of files such as /favicon.ico
     foreach (array('ico', 'png', 'jpg', 'jpeg', 'gif', 'svg', 'webp', 'css', 'js', 'map', 'woff', 'woff2') as $ext) {
         $wpdb->query($wpdb->prepare(
             "DELETE FROM $table WHERE page LIKE %s",
             '%' . $wpdb->esc_like('.' . $ext)
         ));
     }
+
+    // One-time cleanup: records made by Hostinger's own network (not real visitors)
+    $wpdb->query($wpdb->prepare(
+        "DELETE FROM $table WHERE ip LIKE %s",
+        $wpdb->esc_like('2a02:4780:') . '%'
+    ));
 
     update_option('bb_visits_db_version', BB_VISITS_DB_VERSION);
 }
@@ -96,23 +102,23 @@ add_action('template_redirect', 'bugbusters_visits_client_hints', 1);
 function bugbusters_visits_brand_from_model($model)
 {
     $map = array(
-        '/^(SM-|GT-|SAMSUNG)/i'                     => 'Samsung',
-        '/^(CPH|OPPO|PH[A-Z]M)/i'                   => 'OPPO',
-        '/^(RMX|realme)/i'                          => 'Realme',
-        '/^(V\d{4}|vivo)/i'                         => 'vivo',
+        '/^(SM-|GT-|SAMSUNG)/i'                             => 'Samsung',
+        '/^(CPH|OPPO|PH[A-Z]M)/i'                           => 'OPPO',
+        '/^(RMX|realme)/i'                                  => 'Realme',
+        '/^(V\d{4}|vivo)/i'                                 => 'vivo',
         '/^(Redmi|POCO|Mi |MI |Xiaomi|\d{5,}[A-Z0-9]{2,})/' => 'Xiaomi',
-        '/infinix/i'                                => 'Infinix',
-        '/tecno/i'                                  => 'TECNO',
-        '/itel/i'                                   => 'itel',
-        '/^Pixel/i'                                 => 'Google',
-        '/^(HUAWEI|[A-Z]{3}-[A-Z]{1,2}\d{2})/'      => 'Huawei',
-        '/honor/i'                                  => 'Honor',
-        '/^(moto|XT\d{4})/i'                        => 'Motorola',
-        '/^(OnePlus|[A-Z]{2}\d{4}$)/'               => 'OnePlus',
-        '/nokia/i'                                  => 'Nokia',
-        '/^(Sony|XQ-|SO-|SOV)/i'                    => 'Sony',
-        '/^(ASUS|ZS\d)/i'                           => 'ASUS',
-        '/lenovo/i'                                 => 'Lenovo',
+        '/infinix/i'                                        => 'Infinix',
+        '/tecno/i'                                          => 'TECNO',
+        '/itel/i'                                           => 'itel',
+        '/^Pixel/i'                                         => 'Google',
+        '/^(HUAWEI|[A-Z]{3}-[A-Z]{1,2}\d{2})/'              => 'Huawei',
+        '/honor/i'                                          => 'Honor',
+        '/^(moto|XT\d{4})/i'                                => 'Motorola',
+        '/^(OnePlus|[A-Z]{2}\d{4}$)/'                       => 'OnePlus',
+        '/nokia/i'                                          => 'Nokia',
+        '/^(Sony|XQ-|SO-|SOV)/i'                            => 'Sony',
+        '/^(ASUS|ZS\d)/i'                                   => 'ASUS',
+        '/lenovo/i'                                         => 'Lenovo',
     );
     foreach ($map as $pattern => $brand) {
         if (preg_match($pattern, $model)) {
@@ -154,12 +160,19 @@ function bugbusters_visits_parse_ua($ua)
     $brand = '';
     $model = '';
 
+    // Phone model from Client Hints (works even when Chrome is in "Desktop site" mode)
+    $hint_model = '';
+    if (!empty($_SERVER['HTTP_SEC_CH_UA_MODEL'])) {
+        $hint_model = trim(sanitize_text_field(wp_unslash($_SERVER['HTTP_SEC_CH_UA_MODEL'])), " \t\n\r\0\x0B\"");
+    }
+    // Chrome "Desktop site" on a phone: a real phone model is present, so treat it as Android mobile
+    if ($hint_model !== '' && strlen($hint_model) > 2 && $os !== 'iOS' && $os !== 'macOS' && $os !== 'Windows') {
+        $os     = 'Android';
+        $device = 'Mobile';
+    }
+
     if ($os === 'Android') {
-        // 1) Client Hint (most reliable when the browser sends it)
-        if (!empty($_SERVER['HTTP_SEC_CH_UA_MODEL'])) {
-            $model = trim(sanitize_text_field(wp_unslash($_SERVER['HTTP_SEC_CH_UA_MODEL'])), " \t\n\r\0\x0B\"");
-        }
-        // 2) Model written inside the User-Agent
+        $model = $hint_model;
         if ($model === '' && preg_match('/Android [^;]+;\s*([^;)]+?)(?:\s+Build|\))/i', $ua, $m)) {
             $model = trim(str_ireplace(' wv', '', $m[1]));
         }
@@ -286,9 +299,21 @@ function bugbusters_visits_log()
     if (bugbusters_visits_is_bot($ua)) {
         return;
     }
+    if (preg_match('/WordPress\//i', $ua)) {
+        return; // WordPress internal requests (wp_remote_get, WP-Cron, chatbot auto-learning)
+    }
 
     $ip      = bugbusters_visits_get_ip();
     $ip_hash = hash('sha256', $ip . wp_salt('auth')); // used for "unique visitors"
+
+    // Skip requests made by the website's own server
+    $server_ip = isset($_SERVER['SERVER_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['SERVER_ADDR'])) : '';
+    if ($ip !== '' && $ip === $server_ip) {
+        return;
+    }
+    if (strpos($ip, '2a02:4780:') === 0) {
+        return; // Hostinger's own network
+    }
 
     $uri  = isset($_SERVER['REQUEST_URI']) ? sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI'])) : '/';
     $page = mb_substr(strtok($uri, '?'), 0, 255);
@@ -310,9 +335,11 @@ function bugbusters_visits_log()
     if ($existing) {
         if ((int) $existing > 0 && $info['model'] !== '') {
             $wpdb->query($wpdb->prepare(
-                "UPDATE $table SET brand = %s, model = %s WHERE id = %d AND model = ''",
+                "UPDATE $table SET brand = %s, model = %s, os = %s, device = %s WHERE id = %d AND model = ''",
                 $info['brand'],
                 $info['model'],
+                $info['os'],
+                $info['device'],
                 (int) $existing
             ));
         }
