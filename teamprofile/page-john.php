@@ -14,8 +14,8 @@ $bb_member = array(
     'initials'  => 'JM',
     'img'       => 'member-01.png',   // light mode photo
     'img_dark'  => 'member-01glass.png',        // dark mode photo
-    'img_hover'      => 'member-01hover.png',   // light mode hover photo (only Kenneth has one)
-    'img_hover_dark' => 'member-01hoverD.png',  // dark mode hover photo  (only Kenneth has one)
+    'img_hover'      => 'member-01hover.png',   // light mode hover photo 
+    'img_hover_dark' => 'member-01hoverD.png',  // dark mode hover photo
     'desc'      => 'Studies requirements and data to make sure every solution solves the right problem.',
     'bio'       => '',                     // <- write a longer "About me" here (empty = uses 'desc')
     'areas'     => array('Backend & Database', 'UI/UX Design'),

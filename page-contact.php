@@ -13,8 +13,8 @@
 
 /* ---------- Edit your contact details here ---------- */
 $bb_contact = array(
-    'email'    => 'bugbusters@example.com',   // <- where messages are sent + shown on the page
-    'location' => 'Philippines',               // <- change to your school / city
+    'email'    => 'bugbusters@example.com',
+    'location' => 'Alubijid, Misamis Oriental, Philippines',
     'response' => 'We usually reply within 1–2 days.',
 );
 
@@ -132,7 +132,10 @@ $bb_socials = array(
     <?php wp_head(); ?>
     <style>
         /* Loading + disabled state of the "Send message" button */
-        .cp-submit { position: relative; }
+        .cp-submit {
+            position: relative;
+        }
+
         /* Bar loader: |||||| */
         .cp-spinner {
             display: none;
@@ -140,6 +143,7 @@ $bb_socials = array(
             gap: 3px;
             height: 18px;
         }
+
         .cp-spinner i {
             display: block;
             width: 3px;
@@ -149,27 +153,72 @@ $bb_socials = array(
             transform-origin: center;
             animation: cp-bars .9s ease-in-out infinite;
         }
-        .cp-spinner i:nth-child(2) { animation-delay: .1s; }
-        .cp-spinner i:nth-child(3) { animation-delay: .2s; }
-        .cp-spinner i:nth-child(4) { animation-delay: .3s; }
-        .cp-spinner i:nth-child(5) { animation-delay: .4s; }
+
+        .cp-spinner i:nth-child(2) {
+            animation-delay: .1s;
+        }
+
+        .cp-spinner i:nth-child(3) {
+            animation-delay: .2s;
+        }
+
+        .cp-spinner i:nth-child(4) {
+            animation-delay: .3s;
+        }
+
+        .cp-spinner i:nth-child(5) {
+            animation-delay: .4s;
+        }
+
         .cp-submit.is-loading,
         .cp-submit:disabled {
             pointer-events: none;
             cursor: not-allowed;
             opacity: .65;
         }
-        .cp-submit.is-loading { cursor: progress; }
-        .cp-submit.is-loading .cp-spinner { display: inline-flex; }
-        .cp-submit.is-loading .cp-submit-arrow { display: none; }
-        .cp-form.is-sending .cp-field { opacity: .6; pointer-events: none; }
-        .cp-sending-note { margin: .75rem 0 0; font-size: .9rem; opacity: .8; }
-        @keyframes cp-bars {
-            0%, 40%, 100% { transform: scaleY(.35); opacity: .5; }
-            20%           { transform: scaleY(1);   opacity: 1; }
+
+        .cp-submit.is-loading {
+            cursor: progress;
         }
+
+        .cp-submit.is-loading .cp-spinner {
+            display: inline-flex;
+        }
+
+        .cp-submit.is-loading .cp-submit-arrow {
+            display: none;
+        }
+
+        .cp-form.is-sending .cp-field {
+            opacity: .6;
+            pointer-events: none;
+        }
+
+        .cp-sending-note {
+            margin: .75rem 0 0;
+            font-size: .9rem;
+            opacity: .8;
+        }
+
+        @keyframes cp-bars {
+
+            0%,
+            40%,
+            100% {
+                transform: scaleY(.35);
+                opacity: .5;
+            }
+
+            20% {
+                transform: scaleY(1);
+                opacity: 1;
+            }
+        }
+
         @media (prefers-reduced-motion: reduce) {
-            .cp-spinner i { animation-duration: 1.8s; }
+            .cp-spinner i {
+                animation-duration: 1.8s;
+            }
         }
     </style>
 </head>
@@ -495,7 +544,7 @@ $bb_socials = array(
     <script>
         /* Disable the Send button as soon as it is clicked, show a spinner,
            and block double submits (click, Enter key, etc.) */
-        (function () {
+        (function() {
             var form = document.getElementById('bb-contact-form');
             var btn = document.getElementById('bb-submit');
             var note = document.getElementById('bb-sending-note');
@@ -515,8 +564,8 @@ $bb_socials = array(
                 if (note) note.hidden = true;
             }
 
-            form.addEventListener('submit', function (e) {
-                if (sending) {          // already sending: ignore extra clicks / Enter presses
+            form.addEventListener('submit', function(e) {
+                if (sending) { // already sending: ignore extra clicks / Enter presses
                     e.preventDefault();
                     return;
                 }
@@ -529,11 +578,13 @@ $bb_socials = array(
 
                 // Disable the button AFTER the browser has started the submit.
                 // The hidden "bb_contact_submit" input keeps the server working.
-                setTimeout(function () { btn.disabled = true; }, 0);
+                setTimeout(function() {
+                    btn.disabled = true;
+                }, 0);
             });
 
             // Back/forward button restores the page: enable the button again
-            window.addEventListener('pageshow', function (e) {
+            window.addEventListener('pageshow', function(e) {
                 if (e.persisted) reset();
             });
         })();

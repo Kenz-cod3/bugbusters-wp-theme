@@ -1,9 +1,11 @@
 <?php
+
 /**
  * BugBusters Custom – theme functions
  */
 
-function bugbusters_theme_setup() {
+function bugbusters_theme_setup()
+{
     add_theme_support('title-tag');
     add_theme_support('post-thumbnails');
     add_theme_support('html5', array('style', 'script', 'search-form', 'gallery', 'caption'));
@@ -18,26 +20,27 @@ add_action('after_setup_theme', 'bugbusters_theme_setup');
  * Apply the saved (or system) color theme BEFORE the page paints,
  * so there is no white flash when dark mode is on.
  */
-function bugbusters_theme_init_script() {
-    ?>
+function bugbusters_theme_init_script()
+{
+?>
     <script>
-    (function () {
-        var theme = null;
+        (function() {
+            var theme = null;
 
-        try {
-            theme = localStorage.getItem('bb-theme');
-        } catch (e) {}
+            try {
+                theme = localStorage.getItem('bb-theme');
+            } catch (e) {}
 
-        if (theme !== 'dark' && theme !== 'light') {
-            theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
-                ? 'dark'
-                : 'light';
-        }
+            if (theme !== 'dark' && theme !== 'light') {
+                theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ?
+                    'dark' :
+                    'light';
+            }
 
-        document.documentElement.setAttribute('data-theme', theme);
-    })();
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
     </script>
-    <?php
+<?php
 }
 add_action('wp_head', 'bugbusters_theme_init_script', 1);
 
@@ -45,7 +48,8 @@ add_action('wp_head', 'bugbusters_theme_init_script', 1);
  * Load theme styles and scripts.
  * Automatically update version when files change.
  */
-function bugbusters_enqueue_assets() {
+function bugbusters_enqueue_assets()
+{
 
     // Google Font
     wp_enqueue_style(
@@ -78,7 +82,8 @@ add_action('wp_enqueue_scripts', 'bugbusters_enqueue_assets');
  * Pages the theme needs. Each one is created automatically if missing.
  * slug => array(title, template file)
  */
-function bugbusters_required_pages() {
+function bugbusters_required_pages()
+{
     return array(
         'contact' => array('Contact', 'page-contact.php'),
         'justine' => array('Justine Harvey Jaraula', 'teamprofile/page-justine.php'),
@@ -92,7 +97,8 @@ function bugbusters_required_pages() {
  * Finds a published page: first by its template, then by its slug.
  * Returns a WP_Post or null.
  */
-function bugbusters_find_page($slug) {
+function bugbusters_find_page($slug)
+{
     static $cache = array();
     if (array_key_exists($slug, $cache)) {
         return $cache[$slug];
@@ -123,8 +129,10 @@ function bugbusters_find_page($slug) {
         $cache[$slug] = $page;
 
         // Page made earlier with another template path? Point it to the right file.
-        if (get_post_meta($page->ID, '_wp_page_template', true) !== $pages[$slug][1]
-            && $slug !== 'contact') {
+        if (
+            get_post_meta($page->ID, '_wp_page_template', true) !== $pages[$slug][1]
+            && $slug !== 'contact'
+        ) {
             update_post_meta($page->ID, '_wp_page_template', $pages[$slug][1]);
         }
     }
@@ -136,7 +144,8 @@ function bugbusters_find_page($slug) {
  * Makes sure a published page exists for a slug (creates / publishes it).
  * Returns the page ID, or 0 if nothing could be created.
  */
-function bugbusters_ensure_page($slug) {
+function bugbusters_ensure_page($slug)
+{
     $pages = bugbusters_required_pages();
     if (!isset($pages[$slug])) {
         return 0;
@@ -176,7 +185,8 @@ function bugbusters_ensure_page($slug) {
 /**
  * URL of the Contact page (used by every "Contact us" button).
  */
-function bugbusters_contact_url() {
+function bugbusters_contact_url()
+{
     $page = bugbusters_find_page('contact');
     return $page ? get_permalink($page) : home_url('/contact/');
 }
@@ -184,13 +194,15 @@ function bugbusters_contact_url() {
 /**
  * URL of a member's portfolio page (used by "View profile").
  */
-function bugbusters_member_url($slug) {
+function bugbusters_member_url($slug)
+{
     $page = bugbusters_find_page($slug);
     return $page ? get_permalink($page) : home_url('/' . $slug . '/');
 }
 
 // Create all the pages when the theme is activated.
-function bugbusters_ensure_all_pages() {
+function bugbusters_ensure_all_pages()
+{
     foreach (array_keys(bugbusters_required_pages()) as $slug) {
         bugbusters_ensure_page($slug);
     }
@@ -201,7 +213,8 @@ add_action('after_switch_theme', 'bugbusters_ensure_all_pages');
  * Safety net: if someone opens one of these pages (e.g. /kenneth/ or /contact/)
  * before it exists, create it and reload - instead of showing a 404.
  */
-function bugbusters_pages_404_rescue() {
+function bugbusters_pages_404_rescue()
+{
     global $wp;
 
     if (!is_404() || !isset($wp->request)) {
@@ -234,16 +247,19 @@ add_action('template_redirect', 'bugbusters_pages_404_rescue');
  * To see the real error inside the chat while testing, add this to wp-config.php:
  *     define('BB_CHAT_DEBUG', true);
  */
-function bugbusters_chat_debug() {
+function bugbusters_chat_debug()
+{
     return defined('BB_CHAT_DEBUG') && BB_CHAT_DEBUG;
 }
 
 /**
  * Everything the chatbot "knows". Edit this to update its answers.
  */
-function bugbusters_chat_knowledge() {
+function bugbusters_chat_knowledge()
+{
     return array(
         'team_desc' => 'BugBusters is a team of IT students turning ideas into reality through creativity, collaboration, and code.',
+        'location'  => 'Alubijid, Misamis Oriental, Philippines',
         'members'   => array(
             array(
                 'slug'   => 'justine',
@@ -271,7 +287,7 @@ function bugbusters_chat_knowledge() {
             ),
             array(
                 'slug'   => 'angel',
-                'keys'   => array('angel', 'grace', 'salinga'),
+                'keys'   => array('angel', 'grace', 'salingay'),
                 'name'   => 'Angel Grace Salingay',
                 'role'   => 'Project Manager',
                 'about'  => 'Plans the schedule, guides the team, and keeps every project on track.',
@@ -289,7 +305,8 @@ function bugbusters_chat_knowledge() {
  * freeze small servers such as Local). It is read in the background by
  * WP-Cron, saved, and refreshed when you save a page or switch the theme.
  */
-function bugbusters_chat_refresh_site_content() {
+function bugbusters_chat_refresh_site_content()
+{
     $text     = '';
     $response = wp_remote_get(home_url('/'), array(
         'timeout'   => 15,
@@ -310,7 +327,8 @@ function bugbusters_chat_refresh_site_content() {
 }
 add_action('bb_chat_refresh_site_event', 'bugbusters_chat_refresh_site_content');
 
-function bugbusters_chat_schedule_refresh() {
+function bugbusters_chat_schedule_refresh()
+{
     if (!wp_next_scheduled('bb_chat_refresh_site_event')) {
         wp_schedule_single_event(time() + 5, 'bb_chat_refresh_site_event');
     }
@@ -322,7 +340,8 @@ add_action('after_switch_theme', 'bugbusters_chat_schedule_refresh');
  * Returns the saved site text (instant, no web request).
  * If nothing is saved yet, it asks WP-Cron to read the site in the background.
  */
-function bugbusters_chat_site_content() {
+function bugbusters_chat_site_content()
+{
     $text = get_option('bb_chat_site_content', '');
     if ($text === '' || $text === false) {
         bugbusters_chat_schedule_refresh();
@@ -333,18 +352,40 @@ function bugbusters_chat_site_content() {
 
 /**
  * Plain-text version of the knowledge, used as the AI system prompt.
+ * The wording below controls HOW the chatbot talks (tone, style, language).
  */
-function bugbusters_chat_system_prompt() {
-    $k    = bugbusters_chat_knowledge();
-    $text = "You are the friendly assistant on the BugBusters Development Team portfolio website.\n"
-          . "Answer ONLY about the team, its members, skills, projects and how to contact them, "
-          . "using the information below. Reply in the same language the visitor uses (English, Tagalog, Bisaya or Taglish). "
-          . "Keep answers short (max 3 sentences). If the answer is not in the information, say you are not sure "
-          . "and suggest the Contact page. Never invent projects, prices or contact details. "
-          . "If the visitor only greets you (hi, hello, good morning, good afternoon, good evening, magandang umaga, maayong buntag), "
-          . "greet them back in one short sentence in the same language and ask what they would like to know. "
-          . "Do not repeat a long welcome message.\n\n"
-          . $k['team_desc'] . "\n\nTeam members:\n";
+function bugbusters_chat_system_prompt()
+{
+    $k = bugbusters_chat_knowledge();
+
+    $text = "You are the official virtual assistant of the BugBusters Development Team portfolio website.\n\n"
+
+        . "TONE AND STYLE\n"
+        . "- Always sound professional, courteous, and polite, like a well-trained customer service representative.\n"
+        . "- Write in complete, well-structured sentences with correct grammar and punctuation.\n"
+        . "- Do not use slang, jokes, emojis, exclamation overload, markdown, bullet points, or asterisks. Use plain text only.\n"
+        . "- Keep every answer clear and concise: a maximum of 3 sentences.\n"
+        . "- When it is natural, end with a brief offer of further help, for example: \"Is there anything else I can help you with?\"\n\n"
+
+        . "LANGUAGE\n"
+        . "- Reply in the same language the visitor uses (English, Tagalog, Bisaya, or Taglish), but always in a formal and respectful register.\n"
+        . "- In Tagalog, use respectful words such as \"po\" and \"opo\". In Bisaya, use respectful words such as \"palihog\" and \"salamat\".\n\n"
+
+        . "SCOPE AND ACCURACY\n"
+        . "- Answer ONLY about the team, its members, skills, projects, location, and how to contact them, using the information below.\n"
+        . "- If the answer is not in the information below, politely say that you do not have that information and recommend that the visitor use the Contact page.\n"
+        . "- Never invent projects, prices, schedules, or contact details.\n"
+        . "- If the visitor asks about unrelated topics, courteously explain that you can only assist with questions about BugBusters.\n\n"
+
+        . "GREETINGS\n"
+        . "- If the visitor only greets you (hi, hello, good morning, good afternoon, good evening, magandang umaga, maayong buntag), "
+        . "greet them back in one short, courteous sentence in the same language and ask how you may assist them. "
+        . "Do not repeat a long welcome message.\n\n"
+
+        . "INFORMATION ABOUT THE TEAM\n"
+        . $k['team_desc'] . "\n"
+        . 'The team is based in ' . $k['location'] . ".\n\n"
+        . "Team members:\n";
 
     foreach ($k['members'] as $m) {
         $text .= '- ' . $m['name'] . ' (' . $m['role'] . '): ' . $m['about'] . ' Skills: ' . $m['skills'] . ".\n";
@@ -362,7 +403,8 @@ function bugbusters_chat_system_prompt() {
  * Some Windows / Local setups hang when connecting over IPv6 (cURL error 28).
  * Force IPv4 for Gemini requests only.
  */
-function bugbusters_chat_force_ipv4($handle, $args, $url) {
+function bugbusters_chat_force_ipv4($handle, $args, $url)
+{
     if (strpos($url, 'generativelanguage.googleapis.com') !== false) {
         curl_setopt($handle, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
         curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 10);
@@ -380,7 +422,8 @@ add_action('http_api_curl', 'bugbusters_chat_force_ipv4', 10, 3);
  *
  * Returns array('text' => string|null, 'error' => string|null)
  */
-function bugbusters_chat_ai_answer($history) {
+function bugbusters_chat_ai_answer($history)
+{
 
     if (!defined('BB_GEMINI_API_KEY') || !BB_GEMINI_API_KEY) {
         return array('text' => null, 'error' => 'BB_GEMINI_API_KEY is missing in wp-config.php');
@@ -403,7 +446,8 @@ function bugbusters_chat_ai_answer($history) {
     $system = bugbusters_chat_system_prompt();
 
     $make_body = function ($fast) use ($system, $contents) {
-        $config = array('maxOutputTokens' => 800, 'temperature' => 0.4);
+        // Lower temperature = more consistent, professional wording.
+        $config = array('maxOutputTokens' => 800, 'temperature' => 0.3);
         if ($fast) {
             $config['thinkingConfig'] = array('thinkingLevel' => 'low'); // quicker replies
         }
@@ -477,7 +521,8 @@ function bugbusters_chat_ai_answer($history) {
 /**
  * REST endpoint: POST /wp-json/bugbusters/v1/chat
  */
-function bugbusters_chat_register_route() {
+function bugbusters_chat_register_route()
+{
     register_rest_route('bugbusters/v1', '/chat', array(
         'methods'             => 'POST',
         'callback'            => 'bugbusters_chat_handle',
@@ -486,14 +531,18 @@ function bugbusters_chat_register_route() {
 }
 add_action('rest_api_init', 'bugbusters_chat_register_route');
 
-function bugbusters_chat_handle(WP_REST_Request $request) {
+function bugbusters_chat_handle(WP_REST_Request $request)
+{
 
     // Simple rate limit: 15 messages per minute per visitor.
     $ip  = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : 'x';
     $key = 'bb_chat_' . md5($ip);
     $n   = (int) get_transient($key);
     if ($n >= 15) {
-        return new WP_REST_Response(array('reply' => 'You are sending messages too fast. Please wait a moment.', 'links' => array()), 429);
+        return new WP_REST_Response(array(
+            'reply' => 'You are sending messages too quickly. Kindly wait a moment before sending another message.',
+            'links' => array(),
+        ), 429);
     }
     set_transient($key, $n + 1, MINUTE_IN_SECONDS);
 
@@ -515,7 +564,10 @@ function bugbusters_chat_handle(WP_REST_Request $request) {
         array_shift($history);
     }
     if (empty($history) || end($history)['role'] !== 'user') {
-        return new WP_REST_Response(array('reply' => 'Please type a message.', 'links' => array()), 400);
+        return new WP_REST_Response(array(
+            'reply' => 'Kindly type your message so that we may assist you.',
+            'links' => array(),
+        ), 400);
     }
 
     $result = bugbusters_chat_ai_answer($history);
@@ -533,7 +585,7 @@ function bugbusters_chat_handle(WP_REST_Request $request) {
     }
 
     // Failed: save the real reason in the PHP error log (for you),
-    // and show only a friendly message in the chat.
+    // and show only a professional message in the chat.
     error_log('[BugBusters chatbot] ' . $result['error']);
 
     if (bugbusters_chat_debug()) {
@@ -541,7 +593,7 @@ function bugbusters_chat_handle(WP_REST_Request $request) {
     }
 
     return array(
-        'reply' => 'Sorry, I cannot answer right now. Please try again in a few minutes, or contact us directly.',
+        'reply' => 'We apologize, but we are unable to respond at the moment. Please try again in a few minutes, or contact us directly through our Contact page.',
         'links' => array(array('label' => 'Contact us', 'url' => bugbusters_contact_url())),
     );
 }
@@ -549,7 +601,8 @@ function bugbusters_chat_handle(WP_REST_Request $request) {
 /**
  * Load chatbot CSS + JS on every page.
  */
-function bugbusters_chat_assets() {
+function bugbusters_chat_assets()
+{
     $css = get_theme_file_path('/css/chatbot.css');
     $js  = get_theme_file_path('/js/chatbot.js');
 
@@ -575,7 +628,7 @@ function bugbusters_chat_assets() {
     wp_localize_script('bugbusters-chatbot', 'BBChat', array(
         'url'     => esc_url_raw(rest_url('bugbusters/v1/chat')),
         // {greeting} is replaced in chatbot.js with Good morning / afternoon / evening
-        'welcome' => '{greeting}! 👋 I\'m the BugBusters assistant. How can I help you?',
+        'welcome' => '{greeting}. Welcome to BugBusters. How may I assist you today?',
         'quick'   => array(), // add quick-reply buttons here if you want, e.g. array('Who is on the team?')
     ));
 }
@@ -585,8 +638,9 @@ add_action('wp_enqueue_scripts', 'bugbusters_chat_assets');
  * Chat widget markup, printed once in the footer of every template
  * (index, contact, portfolio pages, 404) - no need to edit each file.
  */
-function bugbusters_chat_markup() {
-    ?>
+function bugbusters_chat_markup()
+{
+?>
     <div class="bb-chat" id="bb-chat">
         <button class="bb-chat-toggle" id="bb-chat-toggle" type="button" aria-expanded="false" aria-controls="bb-chat-panel" aria-label="Open chat">
             <svg class="bb-ic-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -620,7 +674,7 @@ function bugbusters_chat_markup() {
             </form>
         </section>
     </div>
-    <?php
+<?php
 }
 add_action('wp_footer', 'bugbusters_chat_markup');
 
@@ -629,7 +683,8 @@ add_action('wp_footer', 'bugbusters_chat_markup');
    Uses the BB_SMTP_* values you set in wp-config.php:
      BB_CONTACT_FROM, BB_SMTP_HOST, BB_SMTP_PORT, BB_SMTP_USER, BB_SMTP_PASS
    ===================================================================== */
-function bugbusters_smtp_setup($phpmailer) {
+function bugbusters_smtp_setup($phpmailer)
+{
     if (!defined('BB_SMTP_HOST') || !defined('BB_SMTP_USER') || !defined('BB_SMTP_PASS')) {
         return; // not configured: leave the WordPress default
     }
@@ -659,9 +714,11 @@ add_action('phpmailer_init', 'bugbusters_smtp_setup');
 
 /* If sending fails, write the real reason to wp-content/debug.log
    (turn on WP_DEBUG + WP_DEBUG_LOG in wp-config.php to see it). */
-function bugbusters_mail_failed($error) {
+function bugbusters_mail_failed($error)
+{
     error_log('BugBusters mail error: ' . $error->get_error_message());
 }
 add_action('wp_mail_failed', 'bugbusters_mail_failed');
 
 require_once get_theme_file_path('/billing-guard.php');
+require_once get_theme_file_path('/visitor-log.php');
