@@ -2,8 +2,9 @@
 
 /**
  * BugBusters - Visitor log
- * Records device brand/model, OS, browser, page, IP and approximate
- * location of each visit, and shows a summary in WP Admin > Visitors.
+ * Records device brand/model, OS, browser, page, IP, approximate location
+ * and (only if the visitor clicks "Allow") the exact location of each visit.
+ * Summary is shown in WP Admin > Visitors.
  *
  * Optional (wp-config.php):
  *   define('BB_VISITS_STORE_IP', false);  // do not keep the real IP address
@@ -13,8 +14,8 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// Bumped to 4: one-time removal of records made by the hosting server itself.
-define('BB_VISITS_DB_VERSION', '4');
+// Bumped to 5: adds lat, lng, accuracy, place columns (exact location).
+define('BB_VISITS_DB_VERSION', '5');
 
 function bugbusters_visits_table()
 {
@@ -51,6 +52,10 @@ function bugbusters_visits_install()
         country VARCHAR(60) NOT NULL DEFAULT '',
         region VARCHAR(80) NOT NULL DEFAULT '',
         city VARCHAR(80) NOT NULL DEFAULT '',
+        lat DECIMAL(9,6) DEFAULT NULL,
+        lng DECIMAL(9,6) DEFAULT NULL,
+        accuracy INT DEFAULT NULL,
+        place VARCHAR(255) NOT NULL DEFAULT '',
         PRIMARY KEY  (id),
         KEY visited_at (visited_at),
         KEY device (device)
@@ -215,7 +220,7 @@ function bugbusters_visits_is_bot($ua)
     return (bool) preg_match('/bot|crawl|spider|slurp|facebookexternalhit|preview|monitor|curl|wget|python|headless|lighthouse/i', $ua);
 }
 
-/* ---------- 3. Visitor IP + location lookup ---------- */
+/* ---------- 3. Visitor IP + approximate location lookup ---------- */
 function bugbusters_visits_get_ip()
 {
     $ip = '';
@@ -333,6 +338,10 @@ function bugbusters_visits_log()
     $dedupe   = 'bb_v_' . md5($ip_hash . $page);
     $existing = get_transient($dedupe);
     if ($existing) {
+        if ((int) $existing > 0) {
+            // Remember the row so the "Allow location" script can update it
+            $GLOBALS['bb_visit'] = array('id' => (int) $existing, 'hash' => $ip_hash);
+        }
         if ((int) $existing > 0 && $info['model'] !== '') {
             $wpdb->query($wpdb->prepare(
                 "UPDATE $table SET brand = %s, model = %s, os = %s, device = %s WHERE id = %d AND model = ''",
@@ -376,12 +385,191 @@ function bugbusters_visits_log()
     $row_id = (int) $wpdb->insert_id;
     set_transient($dedupe, $row_id > 0 ? $row_id : 1, 30 * MINUTE_IN_SECONDS);
 
-    // Look up the location in the background (skipped for localhost / private IPs).
+    if ($row_id > 0) {
+        $GLOBALS['bb_visit'] = array('id' => $row_id, 'hash' => $ip_hash);
+    }
+
+    // Look up the approximate location in the background (skipped for localhost / private IPs).
     if ($row_id > 0 && $ip !== '' && bugbusters_visits_is_public_ip($ip)) {
         wp_schedule_single_event(time() + 2, 'bb_visits_geo_event', array($row_id, $ip));
     }
 }
 add_action('template_redirect', 'bugbusters_visits_log');
+
+/* ---------- 4b. Exact location (visitor must click "Allow") ---------- */
+
+// Endpoint: POST /wp-json/bugbusters/v1/location
+function bugbusters_visits_geo_route()
+{
+    register_rest_route('bugbusters/v1', '/location', array(
+        'methods'             => 'POST',
+        'callback'            => 'bugbusters_visits_geo_save',
+        'permission_callback' => '__return_true',
+    ));
+}
+add_action('rest_api_init', 'bugbusters_visits_geo_route');
+
+function bugbusters_visits_geo_save(WP_REST_Request $request)
+{
+    $id    = (int) $request->get_param('id');
+    $token = (string) $request->get_param('token');
+    $lat   = (float) $request->get_param('lat');
+    $lng   = (float) $request->get_param('lng');
+    $acc   = (int) $request->get_param('acc');
+
+    $ip      = bugbusters_visits_get_ip();
+    $ip_hash = hash('sha256', $ip . wp_salt('auth'));
+
+    // The token proves this browser is the one that made the visit
+    if ($id <= 0 || !hash_equals(wp_hash($id . '|' . $ip_hash), $token)) {
+        return new WP_REST_Response(array('ok' => false), 403);
+    }
+    if ($lat < -90 || $lat > 90 || $lng < -180 || $lng > 180) {
+        return new WP_REST_Response(array('ok' => false), 400);
+    }
+
+    global $wpdb;
+    $table = bugbusters_visits_table();
+    $wpdb->query($wpdb->prepare(
+        "UPDATE $table SET lat = %f, lng = %f, accuracy = %d WHERE id = %d AND lat IS NULL",
+        $lat,
+        $lng,
+        max(0, $acc),
+        $id
+    ));
+
+    // Find the place name (barangay / town) in the background
+    wp_schedule_single_event(time() + 2, 'bb_visits_place_event', array($id, $lat, $lng));
+
+    return array('ok' => true);
+}
+
+// Background: convert coordinates to a place name (OpenStreetMap Nominatim)
+function bugbusters_visits_place_lookup($row_id, $lat, $lng)
+{
+    $url = add_query_arg(array(
+        'format'          => 'jsonv2',
+        'lat'             => $lat,
+        'lon'             => $lng,
+        'zoom'            => 16,
+        'accept-language' => 'en',
+    ), 'https://nominatim.openstreetmap.org/reverse');
+
+    $response = wp_remote_get($url, array(
+        'timeout' => 8,
+        'headers' => array('User-Agent' => 'BugBustersPortfolio/1.0 (' . home_url('/') . ')'),
+    ));
+    if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) {
+        return;
+    }
+    $data = json_decode(wp_remote_retrieve_body($response), true);
+    if (empty($data['address'])) {
+        return;
+    }
+
+    $a     = $data['address'];
+    $parts = array();
+    foreach (array('neighbourhood', 'suburb', 'village', 'town', 'city', 'municipality', 'county', 'state') as $k) {
+        if (!empty($a[$k]) && !in_array($a[$k], $parts, true)) {
+            $parts[] = $a[$k];
+        }
+    }
+    if (empty($parts)) {
+        return;
+    }
+
+    global $wpdb;
+    $wpdb->update(
+        bugbusters_visits_table(),
+        array('place' => mb_substr(sanitize_text_field(implode(', ', $parts)), 0, 255)),
+        array('id' => (int) $row_id),
+        array('%s'),
+        array('%d')
+    );
+}
+add_action('bb_visits_place_event', 'bugbusters_visits_place_lookup', 10, 3);
+
+// The "Allow location?" banner + script (printed in the footer)
+function bugbusters_visits_geo_footer()
+{
+    if (empty($GLOBALS['bb_visit'])) {
+        return;
+    }
+    $v   = $GLOBALS['bb_visit'];
+    $cfg = array(
+        'url'   => esc_url_raw(rest_url('bugbusters/v1/location')),
+        'id'    => (int) $v['id'],
+        'token' => wp_hash($v['id'] . '|' . $v['hash']),
+    );
+?>
+    <script>
+        (function() {
+            var c = <?php echo wp_json_encode($cfg); ?>;
+            if (!navigator.geolocation) return;
+
+            var saved = null;
+            try {
+                saved = localStorage.getItem('bb-geo');
+            } catch (e) {}
+            if (saved === 'no') return;
+
+            function send() {
+                navigator.geolocation.getCurrentPosition(function(p) {
+                    fetch(c.url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            id: c.id,
+                            token: c.token,
+                            lat: p.coords.latitude,
+                            lng: p.coords.longitude,
+                            acc: Math.round(p.coords.accuracy)
+                        })
+                    }).catch(function() {});
+                }, function() {}, {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 60000
+                });
+            }
+
+            // Already allowed before: just send the location again
+            if (saved === 'yes') {
+                send();
+                return;
+            }
+
+            var box = document.createElement('div');
+            box.setAttribute('role', 'dialog');
+            box.setAttribute('aria-label', 'Location request');
+            box.style.cssText = 'position:fixed;left:16px;bottom:16px;z-index:9999;max-width:320px;padding:16px;border-radius:16px;background:#fff;color:#12261f;box-shadow:0 10px 30px rgba(0,0,0,.18);font:500 14px/1.5 Manrope,system-ui,sans-serif;';
+            box.innerHTML = '<p style="margin:0 0 12px;">Allow us to see your approximate location? It is used only to understand where our visitors come from.</p>' +
+                '<div style="display:flex;gap:8px;">' +
+                '<button type="button" id="bb-geo-yes" style="flex:1;padding:8px 12px;border:0;border-radius:999px;background:#0b7a52;color:#fff;font:inherit;cursor:pointer;">Allow</button>' +
+                '<button type="button" id="bb-geo-no" style="flex:1;padding:8px 12px;border:1px solid #cfd8d3;border-radius:999px;background:#fff;color:inherit;font:inherit;cursor:pointer;">No thanks</button>' +
+                '</div>';
+            document.body.appendChild(box);
+
+            document.getElementById('bb-geo-yes').onclick = function() {
+                try {
+                    localStorage.setItem('bb-geo', 'yes');
+                } catch (e) {}
+                box.remove();
+                send();
+            };
+            document.getElementById('bb-geo-no').onclick = function() {
+                try {
+                    localStorage.setItem('bb-geo', 'no');
+                } catch (e) {}
+                box.remove();
+            };
+        })();
+    </script>
+<?php
+}
+add_action('wp_footer', 'bugbusters_visits_geo_footer');
 
 /* ---------- 5. Auto-delete old records (older than 180 days) ---------- */
 function bugbusters_visits_cleanup()
@@ -517,13 +705,14 @@ function bugbusters_visits_page()
                         <th>Browser</th>
                         <th>IP address</th>
                         <th>Location</th>
+                        <th>Exact location</th>
                         <th>Came from</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (empty($recent)) : ?>
                         <tr>
-                            <td colspan="9">No visits recorded yet. Open your site in a private window to test.</td>
+                            <td colspan="10">No visits recorded yet. Open your site in a private window to test.</td>
                         </tr>
                         <?php else : foreach ($recent as $v) :
                             $bm = trim($v->brand . ' ' . $v->model);
@@ -537,6 +726,16 @@ function bugbusters_visits_page()
                                 <td><?php echo esc_html($v->browser); ?></td>
                                 <td><?php echo esc_html($v->ip !== '' ? $v->ip : '(not stored)'); ?></td>
                                 <td><?php echo esc_html(bugbusters_visits_location_text($v)); ?></td>
+                                <td>
+                                    <?php if ($v->lat !== null && $v->lng !== null) : ?>
+                                        <a href="<?php echo esc_url('https://www.google.com/maps?q=' . $v->lat . ',' . $v->lng); ?>" target="_blank" rel="noopener noreferrer">
+                                            <?php echo esc_html($v->place !== '' ? $v->place : $v->lat . ', ' . $v->lng); ?>
+                                        </a>
+                                        <br><small>&plusmn;<?php echo esc_html((int) $v->accuracy); ?> m</small>
+                                    <?php else : ?>
+                                        (not shared)
+                                    <?php endif; ?>
+                                </td>
                                 <td><?php echo esc_html($v->referrer !== '' ? $v->referrer : '(direct)'); ?></td>
                             </tr>
                     <?php endforeach;
@@ -547,6 +746,7 @@ function bugbusters_visits_page()
 
         <p class="description" style="margin-top:12px;">
             Location is approximate (based on IP address) and may show the internet provider's city.
+            Exact location appears only when the visitor clicks "Allow".
             Brand/model is only available when the browser shares it.
         </p>
     </div>
