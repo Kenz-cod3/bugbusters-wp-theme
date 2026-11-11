@@ -125,7 +125,7 @@
                 'role'     => 'Technical Writer',
                 'initials' => 'JH',
                 'img'      => 'member-04.png',
-                'img_dark' => '', // no separate dark photo → same in both modes
+                'img_dark' => 'member-04glass.png', // no separate dark photo → same in both modes
                 'desc'     => 'Turns complex ideas into clear documentation, reports, and user guides for the team.',
                 'profile'  => '#',
                 'slug'     => 'justine',
@@ -155,7 +155,7 @@
                 'role'     => 'Project Manager',
                 'initials' => 'AG',
                 'img'      => 'member-02.png',
-                'img_dark' => '', // no separate dark photo → same in both modes
+                'img_dark' => 'member-02glass.png', // no separate dark photo → same in both modes
                 'desc'     => 'Plans the schedule, guides the team, and keeps every project on track.',
                 'profile'  => '#',
                 'slug'     => 'angel',

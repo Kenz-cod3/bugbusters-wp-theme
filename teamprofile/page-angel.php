@@ -11,7 +11,8 @@ $bb_member = array(
     'name'      => 'Angel Grace Salingay',
     'role'      => 'Project Manager',
     'initials'  => 'AG',
-    'img'       => 'member-02.png',                 // photo in images/ (or images/team/)
+    'img'       => 'member-02.png',
+    'img_dark'  => 'member-02glass.png',                // photo in images/ (or images/team/)
     'desc'      => 'Plans the schedule, guides the team, and keeps every project on track.',
     'bio'       => '',                   // <- write a longer "About me" here (empty = uses 'desc')
     'areas'     => array('Tools & Workflow', 'Project Management'),

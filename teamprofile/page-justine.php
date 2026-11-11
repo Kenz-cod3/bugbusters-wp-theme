@@ -12,7 +12,8 @@ $bb_member = array(
     'name'      => 'Justine Harvey Jaraula',
     'role'      => 'Technical Writer',
     'initials'  => 'JH',
-    'img'       => 'member-04.png',                 // photo in images/ (or images/team/)
+    'img'       => 'member-04.png',
+    'img_dark'  => 'member-04glass.png',                 // photo in images/ (or images/team/)
     'desc'      => 'Turns complex ideas into clear documentation, reports, and user guides for the team.',
     'bio'       => '',                   // <- write a longer "About me" here (empty = uses 'desc')
     'areas'     => array('Technical Writing'),
