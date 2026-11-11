@@ -121,14 +121,14 @@
          */
         $bb_team = array(
             array(
-                'name'     => 'Justine Harvey Jaraula',
+                'name'     => 'Justin Harvey Jaraula',
                 'role'     => 'Technical Writer',
                 'initials' => 'JH',
                 'img'      => 'member-04.png',
                 'img_dark' => 'member-04glass.png', // no separate dark photo → same in both modes
                 'desc'     => 'Turns complex ideas into clear documentation, reports, and user guides for the team.',
                 'profile'  => '#',
-                'slug'     => 'justine',
+                'slug'     => 'justin',
             ),
             array(
                 'name'     => 'John Micheal Jaranilla',

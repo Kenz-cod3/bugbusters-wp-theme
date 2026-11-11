@@ -86,7 +86,7 @@ function bugbusters_required_pages()
 {
     return array(
         'contact' => array('Contact', 'page-contact.php'),
-        'justine' => array('Justine Harvey Jaraula', 'teamprofile/page-justine.php'),
+        'justin' => array('Justin Harvey Jaraula', 'teamprofile/page-justin.php'),
         'john'    => array('John Micheal Jaranilla', 'teamprofile/page-john.php'),
         'kenneth' => array('Kenneth Carl Milarpis', 'teamprofile/page-kenneth.php'),
         'angel'   => array('Angel Grace Salingay', 'teamprofile/page-angel.php'),
@@ -262,9 +262,9 @@ function bugbusters_chat_knowledge()
         'location'  => 'Alubijid, Misamis Oriental, Philippines',
         'members'   => array(
             array(
-                'slug'   => 'justine',
-                'keys'   => array('justine', 'harvey', 'jaraula'),
-                'name'   => 'Justine Harvey Jaraula',
+                'slug'   => 'justin',
+                'keys'   => array('justin', 'harvey', 'jaraula'),
+                'name'   => 'Justin Harvey Jaraula',
                 'role'   => 'Technical Writer',
                 'about'  => 'Turns complex ideas into clear documentation, reports, and user guides.',
                 'skills' => 'Documentation, Markdown, Google Docs, Notion',
@@ -364,7 +364,7 @@ function bugbusters_chat_system_prompt()
         . "- Always sound professional, courteous, and polite, like a well-trained customer service representative.\n"
         . "- Write in complete, well-structured sentences with correct grammar and punctuation.\n"
         . "- Do not use slang, jokes, emojis, exclamation overload, markdown, bullet points, or asterisks. Use plain text only.\n"
-        . "- Keep every answer clear and concise: a maximum of 3 sentences.\n"
+        . "- Match the length of the answer to the question. For greetings and simple questions, use 1 to 2 sentences. For general questions, use 3 to 4 sentences. For detailed questions (for example about a member's skills, the team, or projects), use 5 to 6 sentences. Never exceed 6 sentences.\n"
         . "- When it is natural, end with a brief offer of further help, for example: \"Is there anything else I can help you with?\"\n\n"
 
         . "LANGUAGE\n"
@@ -447,7 +447,7 @@ function bugbusters_chat_ai_answer($history)
 
     $make_body = function ($fast) use ($system, $contents) {
         // Lower temperature = more consistent, professional wording.
-        $config = array('maxOutputTokens' => 800, 'temperature' => 0.3);
+        $config = array('maxOutputTokens' => 2048, 'temperature' => 0.3);
         if ($fast) {
             $config['thinkingConfig'] = array('thinkingLevel' => 'low'); // quicker replies
         }

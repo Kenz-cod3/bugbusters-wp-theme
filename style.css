@@ -1226,7 +1226,7 @@ html[data-theme="dark"] .mp-photo.has-dark .mp-photo-dark {
 }
 
 /* ---------- Hover photo swap (opt-in — only when .has-hover is present) ----------
-   Members like Justine, John, and Angel do NOT set 'img_hover' in their
+   Members like Justin, John, and Angel do NOT set 'img_hover' in their
    own files. Their .mp-hero-card therefore never gets the .has-hover class,
    so the rules below never apply to them — they keep the default light/dark
    photo behavior with no hover swap.

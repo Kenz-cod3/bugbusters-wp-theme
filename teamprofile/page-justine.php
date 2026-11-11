@@ -1,15 +1,15 @@
 <?php
 
 /**
- * Template Name: Portfolio - Justine
- * Description: Portfolio page of Justine Harvey Jaraula. Edit the details below to update the page.
+ * Template Name: Portfolio - Justin
+ * Description: Portfolio page of Justin Harvey Jaraula. Edit the details below to update the page.
  *
- * The page is created automatically (slug "justine"). If you ever make it by hand:
- * Pages > Add New > title it "Justine Harvey Jaraula" > Template: "Portfolio - Justine".
+ * The page is created automatically (slug "justin"). If you ever make it by hand:
+ * Pages > Add New > title it "Justin Harvey Jaraula" > Template: "Portfolio - Justin".
  */
 
 $bb_member = array(
-    'name'      => 'Justine Harvey Jaraula',
+    'name'      => 'Justin Harvey Jaraula',
     'role'      => 'Technical Writer',
     'initials'  => 'JH',
     'img'       => 'member-04.png',

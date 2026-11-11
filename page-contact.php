@@ -24,7 +24,7 @@ $bb_contact = array(
  */
 $bb_recipients = array(
     'general' => array('label' => 'General Inquiry - BugBusters',  'email' => $bb_contact['email']),
-    'justine' => array('label' => 'Justine Harvey Jaraula',        'email' => 'occ.jaraulla.justineharvey@gmail.com'),
+    'justin' => array('label' => 'Justin Harvey Jaraula',        'email' => 'occ.jaraulla.justinharvey@gmail.com'),
     'john'    => array('label' => 'John Micheal Jaranilla',        'email' => 'occ.jaranilla.johnmicheal23@gmail.com'),
     'kenneth' => array('label' => 'Kenneth Carl Milarpis',         'email' => 'occ.milarpis.kennethcal@gmail.com'),
     'angel'   => array('label' => 'Angel Grace Salingay',           'email' => 'occ.salingay.angelgrace@gmail.com'),
@@ -32,7 +32,7 @@ $bb_recipients = array(
 
 /* ---------- Team shown in "Meet the team" (name, photo, page) ---------- */
 $bb_team = array(
-    array('name' => 'Justine Harvey Jaraula', 'initials' => 'JH', 'img' => 'member-04.png', 'slug' => 'justine'),
+    array('name' => 'Justin Harvey Jaraula', 'initials' => 'JH', 'img' => 'member-04.png', 'slug' => 'justin'),
     array('name' => 'John Micheal Jaranilla', 'initials' => 'JM', 'img' => 'member-01.png', 'slug' => 'john'),
     array('name' => 'Kenneth Carl Milarpis',  'initials' => 'KC', 'img' => 'member-03.png', 'slug' => 'kenneth'),
     array('name' => 'Angel Grace Salingay',    'initials' => 'AG', 'img' => 'member-02.png', 'slug' => 'angel'),

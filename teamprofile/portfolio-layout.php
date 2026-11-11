@@ -3,7 +3,7 @@
 /**
  * Shared layout for the member portfolio pages.
  * Do not edit the member details here - edit each member's own file
- * (page-justine.php, page-john.php, page-kenneth.php, page-angel.php).
+ * (page-justin.php, page-john.php, page-kenneth.php, page-angel.php).
  * Those files fill in $bb_member and then load this layout.
  *
  * Layout:
@@ -13,7 +13,7 @@
  * Theme-aware photo:
  *   'img'            = the member's photo. If it is the ONLY photo, it is shown
  *                      in BOTH light and dark mode (default behavior for
- *                      Justine, John, Angel).
+ *                      Justin, John, Angel).
  *   'img_dark'       = optional separate dark-mode photo (Kenneth).
  *                      When set and the file exists, it replaces 'img' in dark mode.
  *   'img_hover'      = optional light-mode hover photo (Kenneth only).
