@@ -208,8 +208,9 @@
                     <h1>We build ideas into reality.</h1>
 
                     <p class="hero-lead">
-                        We are BugBusters, a team of IT students creating
-                        digital solutions through creativity, collaboration,
+                        We are BugBusters, a team of IT students from
+                        Opol Community College (OCC) creating digital
+                        solutions through creativity, collaboration,
                         and code.
                     </p>
 
@@ -346,6 +347,7 @@
             'HTML5'      => 'html5/html5-original.svg',
             'CSS3'       => 'css3/css3-original.svg',
             'JavaScript' => 'javascript/javascript-original.svg',
+            'TypeScript' => 'typescript/typescript-original.svg',
             'Tailwind'   => 'tailwindcss/tailwindcss-original.svg',
             'PHP'        => 'php/php-original.svg',
             'Laravel'    => 'laravel/laravel-original.svg',
@@ -459,14 +461,14 @@
                 'title'   => 'Web Development',
                 'desc'    => 'Responsive, accessible websites and web systems.',
                 'icon'    => '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>',
-                'tags'    => array('HTML5', 'CSS3', 'JavaScript', 'PHP', 'Laravel', 'WordPress', 'Tailwind'),
+                'tags'    => array('HTML5', 'CSS3', 'JavaScript', 'TypeScript', 'PHP', 'Laravel', 'WordPress', 'Tailwind'),
                 'members' => array(2),
             ),
             array(
                 'title'   => 'Mobile Development',
                 'desc'    => 'Cross-platform apps with a focus on user experience.',
                 'icon'    => '<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/>',
-                'tags'    => array('Flutter', 'Java', 'React'),
+                'tags'    => array('Flutter', 'Java', 'React', 'TypeScript'),
                 'members' => array(2),
             ),
             array(
@@ -486,7 +488,7 @@
             array(
                 'title'   => 'IoT & Hardware',
                 'desc'    => 'Projects that connect sensors, devices, and software.',
-                'icon'    => '<rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/>',
+                'icon'    => '<rect x="4" y="4" width="13" height="13" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/>',
                 'tags'    => array('Arduino', 'Sensors', 'Embedded C'),
                 'members' => array(2),
             ),
@@ -725,32 +727,124 @@
                 <div class="project-grid">
 
                     <article class="project-card">
-                        <div class="project-preview preview-one"><span>&lt;/&gt;</span></div>
+                        <div class="project-preview preview-one has-image">
+                            <img
+                                src="<?php echo esc_url(get_theme_file_uri('/images/project1.png')); ?>"
+                                alt="Travelers Inn website homepage"
+                                loading="lazy">
+                        </div>
                         <div class="project-info">
                             <span class="project-category">Web development</span>
-                            <h3>Project One</h3>
-                            <p>A web-based system designed to solve real-world problems.</p>
-                            <a href="#contact">View project</a>
+                            <h3>Lynn Ennia's Travelers Inn</h3>
+                            <p>A hotel booking system for managing rooms, reservations, guests, and staff, with a live website guests can use to book online.</p>
+                            <ul class="project-stack" aria-label="Technologies used">
+                                <li>React</li>
+                                <li>TypeScript</li>
+                                <li>Laravel</li>
+                                <li>MySQL</li>
+                            </ul>
+                            <div class="project-actions">
+                                <a href="#contact" class="project-btn project-btn-primary">Details</a>
+                                <a href="https://github.com/Kenz-cod3/capstone-system/tree/main/capstone_backend" class="project-btn" target="_blank" rel="noopener noreferrer">
+                                    <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true">
+                                        <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+                                    </svg>
+                                    GitHub
+                                </a>
+                                <a href="https://lyneniatravelersinn.com" class="project-btn" target="_blank" rel="noopener noreferrer">
+                                    Visit project
+                                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <path d="M7 17L17 7M8 7h9v9" />
+                                    </svg>
+                                </a>
+                            </div>
                         </div>
                     </article>
 
                     <article class="project-card">
-                        <div class="project-preview preview-two"><span>&#9633;</span></div>
+                        <div class="project-preview preview-two has-image">
+                            <img
+                                src="<?php echo esc_url(get_theme_file_uri('/images/project2.png')); ?>"
+                                alt="Travelers Inn mobile app"
+                                loading="lazy">
+                        </div>
                         <div class="project-info">
                             <span class="project-category">Mobile development</span>
-                            <h3>Project Two</h3>
-                            <p>A mobile app focused on accessibility and user experience.</p>
-                            <a href="#contact">View project</a>
+                            <h3>Travelers Inn Mobile App</h3>
+                            <p>A mobile app connected to the Travelers Inn website. Guests use it to book rooms, while housekeepers use it to monitor room status and know which rooms need cleaning.</p>
+                            <ul class="project-stack" aria-label="Technologies used">
+                                <li>React Native</li>
+                                <li>TypeScript</li>
+                                <li>Laravel</li>
+                                <li>MySQL</li>
+                            </ul>
+                            <div class="project-actions">
+                                <a href="#contact" class="project-btn project-btn-primary">Details</a>
+                                <a href="https://github.com/Kenz-cod3/capstone-system/tree/main/travelers-mobile" class="project-btn" target="_blank" rel="noopener noreferrer">
+                                    <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true">
+                                        <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+                                    </svg>
+                                    GitHub
+                                </a>
+                            </div>
                         </div>
                     </article>
 
                     <article class="project-card">
-                        <div class="project-preview preview-three"><span>&#9678;</span></div>
+                        <div class="project-preview preview-three has-image">
+                            <img
+                                src="<?php echo esc_url(get_theme_file_uri('/images/project3.png')); ?>"
+                                alt="IoT oil filtration system"
+                                loading="lazy">
+                        </div>
                         <div class="project-info">
                             <span class="project-category">IoT development</span>
-                            <h3>Project Three</h3>
-                            <p>A project that connects hardware and software.</p>
-                            <a href="#contact">View project</a>
+                            <h3>IoT Oil Filtration System</h3>
+                            <p>An IoT-based oil filtration system that uses sensors and a microcontroller to monitor oil condition and automate the filtering process, helping extend oil life and reduce waste.</p>
+                            <ul class="project-stack" aria-label="Technologies used">
+                                <li>Arduino</li>
+                                <li>Sensors</li>
+                                <li>Embedded C</li>
+                                <li>IoT</li>
+                            </ul>
+                            <div class="project-actions">
+                                <a href="#contact" class="project-btn project-btn-primary">Details</a>
+                                <a href="<?php echo esc_url(home_url('/iot-oil-filtration/')); ?>" class="project-btn" target="_blank" rel="noopener noreferrer">
+                                    View project
+                                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <path d="M7 17L17 7M8 7h9v9" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="project-card">
+                        <div class="project-preview preview-four has-image">
+                            <img
+                                src="<?php echo esc_url(get_theme_file_uri('/images/project4.png')); ?>"
+                                alt="BugBusters portfolio website homepage"
+                                loading="lazy">
+                        </div>
+                        <div class="project-info">
+                            <span class="project-category">Web development</span>
+                            <h3>BugBusters Team Portfolio</h3>
+                            <p>A custom WordPress theme built from scratch to showcase our team, skills, and projects. Features a responsive layout, dark mode, individual member portfolio pages, and a contact form, deployed live with automated updates from GitHub.</p>
+                            <ul class="project-stack" aria-label="Technologies used">
+                                <li>WordPress</li>
+                                <li>PHP</li>
+                                <li>JavaScript</li>
+                                <li>CSS3</li>
+                            </ul>
+                            <div class="project-actions">
+                                <a href="#contact" class="project-btn project-btn-primary">Details</a>
+                                <a href="https://github.com/Kenz-cod3/bugbusters-portfolio" class="project-btn" target="_blank" rel="noopener noreferrer">
+                                    <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true">
+                                        <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+                                    </svg>
+                                    GitHub
+                                </a>
+                            </div>
                         </div>
                     </article>
 
