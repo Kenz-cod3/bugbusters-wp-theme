@@ -769,7 +769,7 @@ function bugbusters_render_email($vars)
     $replace = array();
 
     // Fills {{logo}} automatically, so page-contact.php needs no change
-    $vars['logo'] = esc_url(get_theme_file_uri('/images/bugbusters-logoD.png'));
+    $vars['logo'] = esc_url(get_theme_file_uri('/images/bugbusters-logo.png'));
 
     foreach ($vars as $key => $value) {
         $search[]  = '{{' . $key . '}}';
