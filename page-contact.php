@@ -13,7 +13,7 @@
 
 /* ---------- Edit your contact details here ---------- */
 $bb_contact = array(
-    'email'    => 'bugbusters@example.com',
+    'email'    => 'sipralim105@gmail.com',
     'location' => 'Alubijid, Misamis Oriental, Philippines',
     'response' => 'We usually reply within 1–2 days.',
 );
@@ -85,15 +85,24 @@ if ('POST' === $_SERVER['REQUEST_METHOD'] && isset($_POST['bb_contact_submit']))
         if (strlen($bb_old['message']) < 10)        $bb_errors[] = 'Your message is too short (at least 10 characters).';
 
         if (empty($bb_errors)) {
-            $subject = $bb_old['subject'] !== '' ? $bb_old['subject'] : 'New message from the website';
-            $body    = "Name: {$bb_old['name']}\nEmail: {$bb_old['email']}\n\nMessage:\n{$bb_old['message']}\n";
+            $subject   = $bb_old['subject'] !== '' ? $bb_old['subject'] : 'New message from the website';
+            $bb_target = $bb_recipients[$bb_old['to']];
+
+            $body = bugbusters_render_email(array(
+                'recipient' => esc_html($bb_target['label']),
+                'name'      => esc_html($bb_old['name']),
+                'email'     => esc_html($bb_old['email']),
+                'subject'   => esc_html($subject),
+                'message'   => nl2br(esc_html($bb_old['message'])),
+                'reply_url' => esc_url('mailto:' . $bb_old['email'] . '?subject=' . rawurlencode('Re: ' . $subject)),
+                'date'      => esc_html(wp_date('F j, Y g:i A')),
+                'year'      => esc_html(date('Y')),
+            ));
+
             $headers = array(
-                'Content-Type: text/plain; charset=UTF-8',
+                'Content-Type: text/html; charset=UTF-8',
                 'Reply-To: ' . $bb_old['name'] . ' <' . $bb_old['email'] . '>',
             );
-
-            $bb_target = $bb_recipients[$bb_old['to']];
-            $body      = 'Sent to: ' . $bb_target['label'] . "\n" . $body;
 
             if (wp_mail($bb_target['email'], '[BugBusters - ' . $bb_target['label'] . '] ' . $subject, $body, $headers)) {
                 wp_safe_redirect(add_query_arg('sent', '1', $bb_page) . '#contact-form');

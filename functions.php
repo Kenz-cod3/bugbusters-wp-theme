@@ -678,6 +678,105 @@ function bugbusters_chat_markup()
 }
 add_action('wp_footer', 'bugbusters_chat_markup');
 
+/**
+ * Returns the email design (HTML) with {{placeholders}}.
+ */
+function bugbusters_email_template()
+{
+    return '<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New message</title>
+</head>
+<body style="margin:0;padding:0;background:#f1f5f3;font-family:Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f3;padding:32px 12px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e4e9e6;">
+
+                   <tr>
+            <td style="background:#0b7a56;padding:28px 32px;">
+              <img src="{{logo}}" alt="BugBusters" height="40" style="display:block;height:40px;width:auto;border:0;margin-bottom:14px;">
+              <h1 style="margin:0;font-size:22px;color:#ffffff;">New message received</h1>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:32px;">
+              <p style="margin:0 0 20px;font-size:15px;color:#3f4b47;">
+                Someone sent a message to <strong style="color:#10231d;">{{recipient}}</strong>.
+              </p>
+
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#fbfcfb;border:1px solid #e4e9e6;border-radius:10px;">
+                <tr>
+                  <td style="padding:14px 18px;border-bottom:1px solid #e4e9e6;font-size:13px;color:#6b7773;width:90px;">Name</td>
+                  <td style="padding:14px 18px;border-bottom:1px solid #e4e9e6;font-size:14px;color:#10231d;font-weight:bold;">{{name}}</td>
+                </tr>
+                <tr>
+                  <td style="padding:14px 18px;border-bottom:1px solid #e4e9e6;font-size:13px;color:#6b7773;">Email</td>
+                  <td style="padding:14px 18px;border-bottom:1px solid #e4e9e6;font-size:14px;color:#10231d;">
+                    <a href="{{reply_url}}" style="color:#0b7a56;text-decoration:none;">{{email}}</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:14px 18px;font-size:13px;color:#6b7773;">Subject</td>
+                  <td style="padding:14px 18px;font-size:14px;color:#10231d;">{{subject}}</td>
+                </tr>
+              </table>
+
+              <h2 style="margin:28px 0 10px;font-size:15px;color:#10231d;">Message</h2>
+                            <div style="padding:18px;background:#f3f4f4;border-left:4px solid #c9cdcc;border-radius:6px;font-size:15px;line-height:1.7;color:#10231d;">
+                {{message}}
+              </div>
+
+              <table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:28px;">
+                <tr>
+                  <td style="background:#0b7a56;border-radius:999px;">
+                    <a href="{{reply_url}}" style="display:inline-block;padding:13px 26px;font-size:14px;font-weight:bold;color:#ffffff;text-decoration:none;">Reply to {{name}}</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:20px 32px;background:#fbfcfb;border-top:1px solid #e4e9e6;font-size:12px;color:#6b7773;">
+              Sent on {{date}} through the BugBusters contact form.<br>
+              &copy; {{year}} BugBusters Team
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>';
+}
+
+/**
+ * Search and replace: {{name}} -> real value.
+ * Values must already be escaped (esc_html etc.).
+ */
+function bugbusters_render_email($vars)
+{
+    $html    = bugbusters_email_template();
+    $search  = array();
+    $replace = array();
+
+    // Fills {{logo}} automatically, so page-contact.php needs no change
+    $vars['logo'] = esc_url(get_theme_file_uri('/images/bugbusters-logoD.png'));
+
+    foreach ($vars as $key => $value) {
+        $search[]  = '{{' . $key . '}}';
+        $replace[] = $value;
+    }
+
+    return str_replace($search, $replace, $html);
+}
+
 /* =====================================================================
    MAIL (SMTP) - makes the contact form really send emails.
    Uses the BB_SMTP_* values you set in wp-config.php:
