@@ -688,66 +688,69 @@ function bugbusters_email_template()
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>New message</title>
+  <title>New Inquiry</title>
 </head>
-<body style="margin:0;padding:0;background:#f1f5f3;font-family:Arial,Helvetica,sans-serif;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f3;padding:32px 12px;">
+<body style="margin:0;padding:0;background:#f5f7f6;font-family:Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f5f7f6;padding:32px 12px;">
     <tr>
       <td align="center">
-        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e4e9e6;">
-
-                   <tr>
-            <td style="background:#0b7a56;padding:28px 32px;">
-              <img src="{{logo}}" alt="BugBusters" height="40" style="display:block;height:40px;width:auto;border:0;margin-bottom:14px;">
-              <h1 style="margin:0;font-size:22px;color:#ffffff;">New message received</h1>
-            </td>
-          </tr>
-
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:20px;border:1px solid #eceeed;">
           <tr>
-            <td style="padding:32px;">
-              <p style="margin:0 0 20px;font-size:15px;color:#3f4b47;">
-                Someone sent a message to <strong style="color:#10231d;">{{recipient}}</strong>.
-              </p>
+            <td style="padding:32px 36px 0;">
 
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#fbfcfb;border:1px solid #e4e9e6;border-radius:10px;">
+              <!-- Logo -->
+              <img src="{{logo}}" alt="BugBusters Development Team" height="48" style="display:block;height:48px;width:auto;border:0;">
+              <div style="height:1px;background:#e4e9e6;margin-top:22px;line-height:1px;font-size:1px;">&nbsp;</div>
+
+              <!-- Icon + title -->
+              <table role="presentation" align="center" cellpadding="0" cellspacing="0" style="margin:32px auto 0;">
                 <tr>
-                  <td style="padding:14px 18px;border-bottom:1px solid #e4e9e6;font-size:13px;color:#6b7773;width:90px;">Name</td>
-                  <td style="padding:14px 18px;border-bottom:1px solid #e4e9e6;font-size:14px;color:#10231d;font-weight:bold;">{{name}}</td>
+                  <td align="center" width="64" height="64" style="width:64px;height:64px;background:#e8f3ee;border-radius:16px;font-size:30px;line-height:64px;color:#0b7a56;">&#9993;</td>
+                </tr>
+              </table>
+              <h1 style="margin:18px 0 6px;text-align:center;font-size:30px;line-height:1.2;color:#10231d;">New Inquiry</h1>
+              <p style="margin:0 0 30px;text-align:center;font-size:15px;color:#6b7773;">You have received a new inquiry from your website.</p>
+
+              <!-- Details -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e4e9e6;border-radius:12px;border-collapse:separate;overflow:hidden;">
+                <tr>
+                  <td width="130" style="width:130px;padding:14px 18px;background:#e8f3ee;border-bottom:1px solid #ffffff;font-size:14px;color:#10231d;">Name</td>
+                  <td style="padding:14px 18px;border-bottom:1px solid #e4e9e6;font-size:15px;font-weight:bold;color:#10231d;">{{name}}</td>
                 </tr>
                 <tr>
-                  <td style="padding:14px 18px;border-bottom:1px solid #e4e9e6;font-size:13px;color:#6b7773;">Email</td>
-                  <td style="padding:14px 18px;border-bottom:1px solid #e4e9e6;font-size:14px;color:#10231d;">
-                    <a href="{{reply_url}}" style="color:#0b7a56;text-decoration:none;">{{email}}</a>
-                  </td>
+                  <td style="padding:14px 18px;background:#e8f3ee;border-bottom:1px solid #ffffff;font-size:14px;color:#10231d;">Email</td>
+                  <td style="padding:14px 18px;border-bottom:1px solid #e4e9e6;font-size:15px;"><a href="{{reply_url}}" style="color:#0b7a56;text-decoration:none;">{{email}}</a></td>
                 </tr>
                 <tr>
-                  <td style="padding:14px 18px;font-size:13px;color:#6b7773;">Subject</td>
-                  <td style="padding:14px 18px;font-size:14px;color:#10231d;">{{subject}}</td>
+                  <td style="padding:14px 18px;background:#e8f3ee;font-size:14px;color:#10231d;">Subject</td>
+                  <td style="padding:14px 18px;font-size:15px;color:#10231d;">{{subject}}</td>
                 </tr>
               </table>
 
-              <h2 style="margin:28px 0 10px;font-size:15px;color:#10231d;">Message</h2>
-                            <div style="padding:18px;background:#f3f4f4;border-left:4px solid #c9cdcc;border-radius:6px;font-size:15px;line-height:1.7;color:#10231d;">
+              <!-- Message -->
+              <h2 style="margin:28px 0 10px;font-size:16px;color:#10231d;">&#9993;&nbsp; Inquiry Message</h2>
+              <div style="padding:18px 20px;background:#f3f4f4;border-left:4px solid #0b7a56;border-radius:8px;font-size:15px;line-height:1.7;color:#10231d;">
                 {{message}}
               </div>
 
-              <table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:28px;">
+              <!-- Button -->
+              <table role="presentation" align="center" cellpadding="0" cellspacing="0" style="margin:30px auto 0;">
                 <tr>
-                  <td style="background:#0b7a56;border-radius:999px;">
-                    <a href="{{reply_url}}" style="display:inline-block;padding:13px 26px;font-size:14px;font-weight:bold;color:#ffffff;text-decoration:none;">Reply to {{name}}</a>
+                  <td style="background:#0b7a56;border-radius:12px;">
+                    <a href="{{reply_url}}" style="display:inline-block;padding:16px 36px;font-size:16px;font-weight:bold;color:#ffffff;text-decoration:none;">Reply to {{name}}</a>
                   </td>
                 </tr>
               </table>
+
+              <!-- Footer -->
+              <div style="height:1px;background:#e4e9e6;margin-top:34px;line-height:1px;font-size:1px;">&nbsp;</div>
+              <p style="margin:18px 0 0;text-align:center;font-size:13px;line-height:1.7;color:#6b7773;">
+                Sent on {{date}}<br>
+                &copy; {{year}} BugBusters Development Team.
+              </p>
             </td>
           </tr>
-
-          <tr>
-            <td style="padding:20px 32px;background:#fbfcfb;border-top:1px solid #e4e9e6;font-size:12px;color:#6b7773;">
-              Sent on {{date}} through the BugBusters contact form.<br>
-              &copy; {{year}} BugBusters Team
-            </td>
-          </tr>
-
+          <tr><td style="height:28px;line-height:28px;font-size:1px;">&nbsp;</td></tr>
         </table>
       </td>
     </tr>
@@ -755,7 +758,6 @@ function bugbusters_email_template()
 </body>
 </html>';
 }
-
 /**
  * Search and replace: {{name}} -> real value.
  * Values must already be escaped (esc_html etc.).
