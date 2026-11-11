@@ -224,8 +224,9 @@
                             <?php foreach ($bb_team as $member) :
                                 $photo  = $bb_member_photos($member);
                                 $has_img = ($photo['light'] !== '');
+                                $has_dark = ($photo['dark'] !== '');
                             ?>
-                                <span class="avatar<?php echo $has_img ? '' : ' is-fallback'; ?>" role="img" aria-label="<?php echo esc_attr($member['name']); ?>" title="<?php echo esc_attr($member['name']); ?>">
+                                <span class="avatar<?php echo $has_img ? '' : ' is-fallback'; ?><?php echo $has_dark ? ' has-dark' : ''; ?>" role="img" aria-label="<?php echo esc_attr($member['name']); ?>" title="<?php echo esc_attr($member['name']); ?>">
                                     <?php if ($has_img) : ?>
                                         <img
                                             src="<?php echo esc_url(add_query_arg(
@@ -233,6 +234,13 @@
                                                         filemtime(get_theme_file_path($photo['light'])),
                                                         get_theme_file_uri($photo['light'])
                                                     )); ?>"
+                                            alt=""
+                                            loading="lazy">
+                                    <?php endif; ?>
+                                    <?php if ($has_dark) : ?>
+                                        <img
+                                            class="avatar-img-dark"
+                                            src="<?php echo esc_url(add_query_arg('ver', filemtime(get_theme_file_path($photo['dark'])), get_theme_file_uri($photo['dark']))); ?>"
                                             alt=""
                                             loading="lazy">
                                     <?php endif; ?>
@@ -588,8 +596,9 @@
                                                 $m = $bb_team[$idx];
                                                 $m_photo = $bb_member_photos($m);
                                                 $m_img   = $m_photo['light'];
+                                                $m_dark  = $m_photo['dark'];
                                             ?>
-                                                <span class="avatar<?php echo $m_img !== '' ? '' : ' is-fallback'; ?>" role="img" aria-label="<?php echo esc_attr($m['name']); ?>" title="<?php echo esc_attr($m['name'] . ' – ' . $m['role']); ?>">
+                                                <span class="avatar<?php echo $m_img !== '' ? '' : ' is-fallback'; ?><?php echo $m_dark !== '' ? ' has-dark' : ''; ?>" role="img" aria-label="<?php echo esc_attr($m['name']); ?>" title="<?php echo esc_attr($m['name'] . ' – ' . $m['role']); ?>">
                                                     <?php if ($m_img !== '') : ?>
                                                         <img
                                                             src="<?php echo esc_url(add_query_arg(
@@ -597,6 +606,13 @@
                                                                         filemtime(get_theme_file_path($m_img)),
                                                                         get_theme_file_uri($m_img)
                                                                     )); ?>"
+                                                            alt=""
+                                                            loading="lazy">
+                                                    <?php endif; ?>
+                                                    <?php if ($m_dark !== '') : ?>
+                                                        <img
+                                                            class="avatar-img-dark"
+                                                            src="<?php echo esc_url(add_query_arg('ver', filemtime(get_theme_file_path($m_dark)), get_theme_file_uri($m_dark))); ?>"
                                                             alt=""
                                                             loading="lazy">
                                                     <?php endif; ?>

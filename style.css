@@ -677,6 +677,22 @@ html.theme-vt *::after {
   display: none;
 }
 
+/* Avatars: light photo by default, dark photo only in dark mode */
+.avatar .avatar-img-dark {
+  display: none;
+}
+
+html[data-theme="dark"] .avatar.has-dark img:not(.avatar-img-dark) {
+  display: none;
+}
+
+html[data-theme="dark"] .avatar.has-dark .avatar-img-dark {
+  display: block;
+}
+
+
+
+
 .avatar-fallback {
   display: flex;
   align-items: center;
